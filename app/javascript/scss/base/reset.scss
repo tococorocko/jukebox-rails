@@ -1,0 +1,25 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%; /* 62.5% of 16px = 10px */
+}
+
+html *, html *:after, html *:before {
+  box-sizing: inherit;
+}
+
+a {
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+ul {
+  list-style-type: none;
+}

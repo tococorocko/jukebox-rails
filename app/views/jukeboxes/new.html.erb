@@ -1,0 +1,39 @@
+<div class="options">
+  <%= link_to "#{current_user.name} abmelden", destroy_user_session_path, method: :delete, :class => 'navbar-link'  %>
+</div>
+<div class="container container--user">
+  <div class="title">
+    <h1 class="title__h1">Spotify-Jukebox</h1>
+    <h2 class="title__h2">Jukebox erstellen für <%= @jukebox.user.name %></h2>
+    <hr class="title__hr">
+  </div>
+
+    <div class="settings">
+      <%= form_with model: @jukebox, local: true, class: "settings__form" do |f| %>
+        <%= f.hidden_field :user_id, value: @jukebox.user_id %>
+        <div class="form-group">
+          <%= f.label :name, "Name der Jukebox (max. 5 Zeichen):" %>
+          <%= f.text_field :name, { maxlength: "5" } %>
+          <div class="hint">Name wird oben in Jukebox angezeigt.</div>
+        </div>
+        <div class="form-group">
+          <%= f.label :device, "Abspielgerät:" %>
+          <%= f.collection_select :device_id, @devices, :id, :name, { required: 'true' } %>
+          <div class="hint">Spotify muss auf gewünschtem Gerät geöffnet sein. Ggf. diese Seite neuladen.</div>
+        </div>
+        <div class="form-group">
+          <%= f.label :playlist, "Playlist:" %>
+          <%= f.collection_select :playlist_id, @playlists, :id, :name, { required: 'true' } %>
+          <div class="hint">Playlist muss auf Spotify erstellt werden. Ggf. diese Seite neu laden.</div>
+        </div>
+        <div class="form-group">
+          <%= f.label :camera, "Kamera:" %>
+          <%= f.select :camera, @cameras, { required: 'false', id: "camera" } %>
+          <div class="hint">Browser benötigt Rechte um auf die Kamera zugreifen zu können. Ggf. Anwendung komplett neu öffnen.</div>
+        </div>
+        <div class="form-group">
+          <%= f.submit "Jukebox laden", :class => 'btn' %>
+        </div>
+      <% end %>
+  </div>
+</div>

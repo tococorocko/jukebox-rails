@@ -16,7 +16,8 @@ const images = require.context('../images', true)
 const imagePath = (name) => images(name, true)
 
 // JS
-import('javascript/site')
+import('javascript/jukebox/user-input')
+import('javascript/jukebox/continious-updates')
 
 // CSS
-import 'scss/site'
+import 'scss/jukebox'

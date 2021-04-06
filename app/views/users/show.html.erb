@@ -1,0 +1,22 @@
+<div class="options">
+  <%= link_to "#{current_user.name} abmelden", destroy_user_session_path, method: :delete, :class => 'navbar-link'  %>
+</div>
+<div class="container container--user" id="getCameraUser">
+  <div class="title">
+    <h1 class="title__h1">Spotify-Jukebox</h1>
+    <h2 class="title__2">Übersicht</h2>
+    <hr class="title__hr">
+  </div>
+
+  <div class="settings">
+    <div class="settings__title">
+      Angemeldet als:
+    </div>
+    <div class="settings__value">
+      <%= current_user.name %>
+    </div>
+    <div class="settings__button">
+      <%= link_to "Jukebox erstellen", new_jukebox_path, class:"settings__button-text" %>
+    </div>
+  </div>
+</div>

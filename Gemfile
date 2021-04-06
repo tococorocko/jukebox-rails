@@ -25,6 +25,12 @@ gem 'jbuilder', '~> 2.7'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
+gem 'rspotify'
+gem 'rails-i18n', '~> 6.0.0'
+gem "devise", github: "heartcombo/devise", branch: "master"
+gem 'omniauth-spotify'
+gem 'omniauth-rails_csrf_protection'
+gem "httparty"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

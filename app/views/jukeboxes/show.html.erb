@@ -1,0 +1,113 @@
+<div id="container" class="<%= @num_of_pages %>" data-jukebox-id=<%= @jukebox.id %>>
+   <div id="player">
+    <div id="jukebox-title">
+      <div class="sign-wrap">
+        <div class="sign">
+          <h2 data-before=<%= @jukebox_title %> data-after=<%= @jukebox_title %>><%= @jukebox_title %></h2>
+        </div>
+      </div>
+    </div>
+    <div id="photo-jukebox">
+      <div class="sign-wrap">
+        <div class="sign">
+          <h2>Photo-Jukebox</h2>
+        </div>
+      </div>
+    </div>
+    <div id="playing">
+      <div class="music-player-container">
+        <div class="album">
+          <div id="album-art"></div>
+          <div id="vinyl" class="is-playing"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="playing-queue">
+      <div class="playing-song">
+        <div class="on-air">
+          <i class="fa fa-play"></i>
+        </div>
+          <p id="current-song"><%= @currently_playing_song[:name] %></p>
+      </div>
+      <div id="song-queue">
+        <% @queued_songs.each do |song| %>
+          <p><%= song[0] %> - <%= song[1] %></p>
+        <% end %>
+      </div>
+      <p id="song-queue-more"></p>
+    </div>
+    <div id="instructions">
+      <div class="instruction-lines">
+        <p>Wirf deine Münze ein</p>
+        <p>Drücke Buchstabe & Zahl deines Songs</p>
+        <p>Mach dich bereits fürs Foto</p>
+        <p>1 Credit = 1 Play</p>
+      </div>
+    </div>
+    <div id="credits">
+      <h3 id="credit-amount"><%= @jukebox.credit %></h3>
+    </div>
+  </div>
+
+
+  <div class="song-container">
+    <% @songs_per_page.each do |song_page_group| %>
+      <div class='jukebox-row'>
+        <ul class='jukebox-col'>
+          <% song_page_group[0..9].each do |song| %>
+            <li class="jukebox-entry">
+              <div class="song-label keyboard-input" data-key=<%= song[6] %> data-num=<%= song[4] %> song-id=<%= song[2] %>>
+                <kbd><%= song[5] %></kbd>
+                <kbd><%= song[3] %></kbd>
+              </div>
+              <div class="song-details">
+                <h4 class="song-title"><%= song[0][0..50] %></h4>
+                <h4 class="song-artist"><%= song[1][0..50] %></h4>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+
+        <div class="jukebox-col-placeholder"></div>
+        <div class="jukebox-col-placeholder"></div>
+
+        <ul class='jukebox-col'>
+          <% song_page_group[10..19].each do |song| %>
+            <li class="jukebox-entry">
+              <div class="song-label keyboard-input" data-key=<%= song[6] %> data-num=<%= song[4] %> song-id=<%= song[2] %>>
+                <kbd><%= song[5] %></kbd>
+                <kbd><%= song[3] %></kbd>
+              </div>
+              <div class="song-details">
+                <h4 class="song-title"><%= song[0][0..50] %></h4>
+                <h4 class="song-artist"><%= song[1][0..50] %></h4>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div class='jukebox-row'>
+        <% song_page_group[20..59].in_groups_of(10) do |bottom_songs| %>
+          <ul class='jukebox-col'>
+            <% bottom_songs.each do |song| %>
+              <li class="jukebox-entry">
+                <div class="song-label keyboard-input" data-key=<%= song[6] %> data-num=<%= song[4] %> song-id=<%= song[2] %>>
+                  <kbd><%= song[5] %></kbd>
+                  <kbd><%= song[3] %></kbd>
+                </div>
+                <div class="song-details">
+                  <h4 class="song-title"><%= song[0][0..50] %></h4>
+                  <h4 class="song-artist"><%= song[1][0..50] %></h4>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

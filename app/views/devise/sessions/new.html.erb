@@ -1,0 +1,12 @@
+<div class="container container--login">
+  <div class="title">
+    <h1>Spotify-Jukebox</h1>
+    <h2>Anmelden</h2>
+  </div>
+
+  <div class="settings settings--spotify">
+    <%= image_pack_tag 'spotify-logo.png', class:"settings__spotify-logo" %>
+    <%= link_to "Mit Spotify anmelden", user_spotify_omniauth_authorize_path(show_dialog: true), method: :post, class:"settings__link" %>
+    <%= image_pack_tag 'spotify-logo.png', class:"settings__spotify-logo" %>
+  </div>
+</div>
