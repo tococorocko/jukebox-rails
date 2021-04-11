@@ -28,7 +28,7 @@
         </div>
         <div class="form-group">
           <%= f.label :camera, "Kamera:" %>
-          <%= f.select :camera, @cameras, { required: 'false', id: "camera" } %>
+          <%= f.select :camera_id, @cameras, { required: 'true' } %>
           <div class="hint">Browser benötigt Rechte um auf die Kamera zugreifen zu können. Ggf. Anwendung komplett neu öffnen.</div>
         </div>
         <div class="form-group">

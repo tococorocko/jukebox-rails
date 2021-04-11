@@ -1,13 +1,13 @@
 class JukeboxesController < ApplicationController
 
   def new
-    reset_existing_jukebox
+    # reset_existing_jukebox
     fetch_active_devices(current_user)
     fetch_playlists(current_user)
     @user = User.find(current_user.id)
     @jukebox = Jukebox.new(user: current_user)
-    @devices = @user.devices.sort
-    @playlists = @user.playlists.sort
+    @devices = @user.devices.order(:name)
+    @playlists = @user.playlists.order(:name)
     @cameras = []
   end
 
@@ -26,7 +26,6 @@ class JukeboxesController < ApplicationController
     @jukebox_title = @jukebox.name.presence || "Music"
     fetch_songs(@jukebox)
     @currently_playing_song = fetch_playing_song(@jukebox.user)
-    @jukebox.songs.where("updated_at < ?", 2.minutes.ago).destroy_all # delete old songs
     @songs = @jukebox.songs.limit(240).order(:artist, :name)
     numbered_songs = LetterNumberCodes.add_number_and_letter_codes(@songs.pluck(:name, :artist, :id))
     @songs_per_page = numbered_songs.each_slice(60).to_a
@@ -117,14 +116,14 @@ class JukeboxesController < ApplicationController
   end
 
   def jukebox_params
-    params.require(:jukebox).permit(:name, :user_id, :device_id, :playlist_id)
+    params.require(:jukebox).permit(:name, :user_id, :device_id, :playlist_id, :camera_id)
   end
 
-  def reset_existing_jukebox
-    Jukebox.where(user: current_user).destroy_all
-    current_user.playlists.destroy_all
-    current_user.devices.destroy_all
-  end
+  # def reset_existing_jukebox
+  #   Jukebox.where(user: current_user).destroy_all
+  #   current_user.playlists.destroy_all
+  #   current_user.devices.destroy_all
+  # end
 
   def fetch_active_devices(user)
     SpotifyConnector.fetch_active_devices(user)

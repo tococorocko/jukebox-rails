@@ -145,11 +145,54 @@ function addSongtoQueue(songId) {
     })
     .then(data => {
       updateCredits("remove");
+      takePhoto();
       updateQueue();
     })
     .catch(error => {
       console.error('Error:', error);
     });
+}
+
+function takePhoto() {
+  showVideo();
+  setTimeout(function(){
+    displayOverlay("inline-block");
+    // paintToCanvas();
+  }, 4000);
+  // setTimeout(function(){
+  //   showCountdown();
+  //   startCountdown();
+  // }, 6000);
+  // setTimeout(function(){
+  //   takePhoto();
+  // }, 13400)
+  setTimeout(function(){
+    displayOverlay("none");
+  }, 14000)
+}
+
+function showVideo() {
+  let video = document.getElementById("photo-player");
+  let camera_id = document.getElementById("container").getAttribute('data-camera-id');
+
+  navigator.mediaDevices.getUserMedia({ audio: false, video: { deviceId: { exact: camera_id } } })
+  .then(localMediaStream => {
+    video.srcObject = localMediaStream
+    video.play();
+  })
+  .catch(err => {
+    console.log("Camera Error:", err)
+  })
+}
+
+function displayOverlay(style) {
+  let photoOverlay = document.getElementById("photo-overlay");
+  let video = document.getElementById("photo-player");
+  let canvas = document.getElementById("photo");
+
+  photoOverlay.style.display = style;
+  video.style.display = style;
+  canvas.style.display = style;
 }
 
 function removeSelection() {

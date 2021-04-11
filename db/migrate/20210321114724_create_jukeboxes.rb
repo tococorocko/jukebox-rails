@@ -6,6 +6,7 @@ class CreateJukeboxes < ActiveRecord::Migration[6.0]
       t.belongs_to :user
       t.belongs_to :device
       t.belongs_to :playlist
+      t.string :camera_id
       t.timestamps
     end
   end

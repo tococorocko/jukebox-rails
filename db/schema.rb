@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2021_04_03_143532) do
     t.bigint "user_id"
     t.bigint "device_id"
     t.bigint "playlist_id"
+    t.string "camera_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["device_id"], name: "index_jukeboxes_on_device_id"

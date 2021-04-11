@@ -16,7 +16,7 @@ const images = require.context('../images', true)
 const imagePath = (name) => images(name, true)
 
 // JS
-import('javascript/site')
+import('javascript/settings')
 
 // CSS
 import 'scss/site'

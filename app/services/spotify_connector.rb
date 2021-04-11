@@ -55,7 +55,7 @@ class SpotifyConnector < ApplicationService
     if !response.success?
       refresh_token(user)
     end
-    byebug
+
     parsed_response = JSON.parse(response.body)["item"]
     if parsed_response["name"].present?
       {name: parsed_response["name"] + " - " + parsed_response["artists"][0]["name"], cover_uri: parsed_response["album"]["images"][0]["url"], uri: parsed_response["uri"]}
@@ -127,14 +127,27 @@ class SpotifyConnector < ApplicationService
 
   def self.create_devices(devices, user)
     devices.each do |device|
-      Device.create(name: device["name"], device_uid: device["id"], user: user)
+      existing_device = Device.where(device_uid: device["id"], user: user).last
+      if Device.where(device_uid: device["id"], user: user).present?
+        existing_device.touch
+      else
+        Device.create(name: device["name"], device_uid: device["id"], user: user)
+      end
     end
+    Device.where("devices.user_id = ? AND updated_at < ?", user, 1.minutes.ago).destroy_all
   end
 
   def self.create_playlists(playlists, user)
     playlists.each do |list|
-      Playlist.create(name: list["name"], playlist_uid: list["id"], uri: list["tracks"]["href"], track_number: list["tracks"]["total"], user: user)
+      existing_playlist = Playlist.where(playlist_uid: list["id"], user: user).last
+      if existing_playlist
+        existing_playlist.touch
+      else
+        Playlist.create(name: list["name"], playlist_uid: list["id"], uri: list["tracks"]["href"], track_number: list["tracks"]["total"], user: user)
+      end
     end
+
+    Playlist.where("playlists.user_id = ? AND updated_at < ?", user, 1.minutes.ago).destroy_all
   end
 
   def self.create_songs(songs, jukebox)
@@ -143,14 +156,14 @@ class SpotifyConnector < ApplicationService
       existing_song = Song.where(jukebox: jukebox, name: name).last
       if existing_song.present?
         existing_song.touch
-        next
+      else
+        artist = song["track"]["artists"][0]["name"] rescue ""
+        uri = song["track"]["uri"] rescue ""
+        cover_uri = song["track"]["album"]["images"][0]["url"] rescue ""
+        length = song["track"]["duration_ms"] rescue ""
+        Song.create(name: name, artist: artist, uri: uri, cover_uri: cover_uri, length: length, jukebox: jukebox)
       end
-      artist = song["track"]["artists"][0]["name"] rescue ""
-      uri = song["track"]["uri"] rescue ""
-      cover_uri = song["track"]["album"]["images"][0]["url"] rescue ""
-      length = song["track"]["duration_ms"] rescue ""
-
-      Song.create(name: name, artist: artist, uri: uri, cover_uri: cover_uri, length: length, jukebox: jukebox)
     end
+    jukebox.songs.where("updated_at < ?", 1.minutes.ago).destroy_all
   end
 end

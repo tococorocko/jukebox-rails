@@ -1,4 +1,84 @@
-<div id="container" class="<%= @num_of_pages %>" data-jukebox-id=<%= @jukebox.id %>>
+<div id="container" class="<%= @num_of_pages %>" data-jukebox-id=<%= @jukebox.id %> data-camera-id=<%= @jukebox.camera_id %>>
+  <div id="photo-overlay">
+    <canvas id="photo"></canvas>
+    <video id="photo-player"></video>
+    <div class="countdown-container">
+      <ul class="flip secondPlay">
+        <li>
+          <div class="dial">
+            <div class="up">
+              <div class="shadow"></div>
+              <div class="inn">5</div>
+            </div>
+            <div class="down">
+              <div class="shadow"></div>
+              <div class="inn">5</div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="dial">
+            <div class="up">
+              <div class="shadow"></div>
+              <div class="inn">4</div>
+            </div>
+            <div class="down">
+              <div class="shadow"></div>
+              <div class="inn">4</div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="dial">
+            <div class="up">
+              <div class="shadow"></div>
+              <div class="inn">3</div>
+            </div>
+            <div class="down">
+              <div class="shadow"></div>
+              <div class="inn">3</div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="dial">
+            <div class="up">
+              <div class="shadow"></div>
+              <div class="inn">2</div>
+            </div>
+            <div class="down">
+              <div class="shadow"></div>
+              <div class="inn">2</div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="dial">
+            <div class="up">
+              <div class="shadow"></div>
+              <div class="inn">1</div>
+            </div>
+            <div class="down">
+              <div class="shadow"></div>
+              <div class="inn">1</div>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="dial">
+            <div class="up">
+              <div class="shadow"></div>
+              <div class="inn">0</div>
+            </div>
+            <div class="down">
+              <div class="shadow"></div>
+              <div class="inn">0</div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
    <div id="player">
     <div id="jukebox-title">
       <div class="sign-wrap">
