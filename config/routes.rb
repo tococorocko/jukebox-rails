@@ -14,4 +14,5 @@ Rails.application.routes.draw do
   get 'playing-song/:jukebox_id', action: :playing_song, controller: 'jukeboxes'
   get 'queue/:jukebox_id', action: :queue, controller: 'jukeboxes'
   get 'next-song/:jukebox_id', action: :next_song, controller: 'jukeboxes'
+  post 'take-photo/:jukebox_id', action: :take_photo, controller: 'jukeboxes'
 end

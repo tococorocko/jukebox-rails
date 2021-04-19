@@ -1,12 +1,27 @@
 <div class="container container--login">
-  <div class="title">
-    <h1>Spotify-Jukebox</h1>
-    <h2>Anmelden</h2>
+  <div class="spotify">
+    <%= link_to "https://www.spotify.com/" do %>
+      <span>Powered by</span>
+      <%= image_pack_tag 'spotify-logo.png', class:"spotify-logo" %>
+    <% end %>
   </div>
-
+  <div id="jukebox-title">
+    <div class="sign-wrap">
+      <div class="sign">
+        <h2 data-after="Spotify">Spotify</h2>
+      </div>
+    </div>
+  </div>
+  <div id="photo-jukebox">
+    <div class="sign-wrap">
+      <div class="sign">
+        <h2>Photo-Jukebox</h2>
+      </div>
+    </div>
+  </div>
   <div class="settings settings--spotify">
-    <%= image_pack_tag 'spotify-logo.png', class:"settings__spotify-logo" %>
-    <%= link_to "Mit Spotify anmelden", user_spotify_omniauth_authorize_path(show_dialog: true), method: :post, class:"settings__link" %>
-    <%= image_pack_tag 'spotify-logo.png', class:"settings__spotify-logo" %>
+    <div class="button">
+      <%= link_to "Sign up with Spotify", user_spotify_omniauth_authorize_path(show_dialog: true), method: :post, class:"button__text" %>
+    </div>
   </div>
 </div>

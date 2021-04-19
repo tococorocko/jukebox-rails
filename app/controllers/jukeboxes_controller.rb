@@ -102,6 +102,20 @@ class JukeboxesController < ApplicationController
     head :ok
   end
 
+  def take_photo
+    jukebox = Jukebox.find(params[:jukebox_id])
+    song = Song.find(params[:song_id])
+    decoded_base_sixty_four_img = Base64.decode64(params[:image])
+    jukebox.images.attach(
+      io: StringIO.new(decoded_base_sixty_four_img),
+      filename: "#{song.artist} - #{song.name}",
+      content_type: "image/png"
+    )
+
+    head :ok
+  end
+
+
   private
 
   def updated_queue(jukebox, jukebox_song)
@@ -116,7 +130,7 @@ class JukeboxesController < ApplicationController
   end
 
   def jukebox_params
-    params.require(:jukebox).permit(:name, :user_id, :device_id, :playlist_id, :camera_id)
+    params.require(:jukebox).permit(:name, :user_id, :device_id, :playlist_id, :camera_id, images: [])
   end
 
   # def reset_existing_jukebox

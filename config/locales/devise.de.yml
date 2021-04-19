@@ -37,7 +37,7 @@ de:
       send_instructions: Du erhältst in wenigen Minuten eine E-Mail, mit der Du Deine Registrierung bestätigen kannst.
       send_paranoid_instructions: Falls Deine E-Mail-Adresse in unserer Datenbank existiert, erhältst Du in wenigen Minuten eine E-Mail, mit der Du Deine Registrierung bestätigen kannst.
     failure:
-      already_authenticated: Du bist bereits angemeldet.
+      already_authenticated: ""
       inactive: Dein Konto ist nicht aktiv.
       invalid: "%{authentication_keys} oder Passwort ungültig."
       last_attempt: Du hast noch einen Versuch, bis Dein Konto gesperrt wird.
