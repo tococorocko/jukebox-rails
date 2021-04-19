@@ -2,21 +2,100 @@
   <%= link_to "#{current_user.name} abmelden", destroy_user_session_path, method: :delete, :class => 'navbar-link'  %>
 </div>
 <div class="container container--user" id="getCameraUser">
-  <div class="title">
-    <h1 class="title__h1">Spotify-Jukebox</h1>
-    <h2 class="title__2">Übersicht</h2>
-    <hr class="title__hr">
+  <div class="spotify">
+    <%= link_to "https://www.spotify.com/" do %>
+      <span>Powered by</span>
+      <%= image_pack_tag 'spotify-logo.png', class:"spotify-logo" %>
+    <% end %>
+  </div>
+  <div id="jukebox-title">
+    <div class="sign-wrap">
+      <div class="sign">
+        <h2 data-after="Spotify">Spotify</h2>
+      </div>
+    </div>
+  </div>
+  <div id="photo-jukebox">
+    <div class="sign-wrap">
+      <div class="sign">
+        <h2>Photo-Jukebox</h2>
+      </div>
+    </div>
   </div>
 
   <div class="settings">
     <div class="settings__title">
-      Angemeldet als:
+      Angemeldet als
     </div>
     <div class="settings__value">
       <%= current_user.name %>
     </div>
-    <div class="settings__button">
-      <%= link_to "Jukebox erstellen", new_jukebox_path, class:"settings__button-text" %>
+    <div class="settings__group">
+      <div class="button">
+        <%= link_to "Neue Jukebox laden", new_jukebox_path, class:"button__text" %>
+      </div>
     </div>
   </div>
+  <div class="title">
+    Deine Jukebox-Sessions
+  </div>
+  <% @jukeboxes.each_with_index do |jukebox, index| %>
+    <div class="card">
+      <div class="card__actions">
+        <% if jukebox.images.present? %>
+          <%= link_to "#" do %>
+        <% end %>
+          <%= image_pack_tag 'download.png', class:"icon" %>
+        <% end %>
+        <%= link_to jukebox_path(jukebox), method: :delete, data: {confirm: "Jukebox wirklich samt allen dazugehörigen Fotos unwiderruflich löschen?"} do %>
+          <%= image_pack_tag 'delete.png', class:"icon" %>
+        <% end %>
+      </div>
+      <div class="card__title_bar">
+        <div class="card__title_bar__title">
+          Jukebox <%= index + 1 %>: <%= jukebox.name %>
+        </div>
+        <div class="card__title_bar__date">
+          <%= jukebox.created_at.to_date %>
+        </div>
+      </div>
+      <% if jukebox.images.present? %>
+      <div class="splide <%= index %>">
+        <div class="splide__track">
+          <ul class="splide__list">
+            <% jukebox.images.each do |img| %>
+              <li class="splide__slide">
+                <%= image_tag img %>			
+                  <div class="track">
+                    <%= img.filename %>
+                  </div>
+                <div class="time">
+                  Uhrzeit: <%= img.created_at.strftime("%H:%M Uhr, %B %-d, %Y") %>
+				        </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+      <% else %>
+        <div class="card__no_content">
+          Keine Photos vorhanden
+        </div>
+      <% end %>
+      <hr class="title__hr">
+    </div>
+  <% end %>
 </div>
+<script>
+	document.addEventListener( 'DOMContentLoaded', function () {
+    document.querySelectorAll(".splide").forEach( function (elem) {
+      new Splide( elem, {
+        type   : 'loop',
+	      padding: {
+		      right: '23rem',
+		      left : '23rem',
+	      },
+      } ).mount();
+    })
+	});
+</script>

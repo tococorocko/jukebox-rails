@@ -1,38 +1,84 @@
 <div class="options">
   <%= link_to "#{current_user.name} abmelden", destroy_user_session_path, method: :delete, :class => 'navbar-link'  %>
+  |
+  <%= link_to "Zurück zur Überischt", user_session_path, :class => 'navbar-link' %>
 </div>
 <div class="container container--user">
-  <div class="title">
-    <h1 class="title__h1">Spotify-Jukebox</h1>
-    <h2 class="title__h2">Jukebox erstellen für <%= @jukebox.user.name %></h2>
-    <hr class="title__hr">
+  <div class="spotify">
+    <%= link_to "https://www.spotify.com/" do %>
+      <span>Powered by</span>
+      <%= image_pack_tag 'spotify-logo.png', class:"spotify-logo" %>
+    <% end %>
+  </div>
+  <div id="jukebox-title">
+    <div class="sign-wrap">
+      <div class="sign">
+        <h2 data-after="Spotify">Spotify</h2>
+      </div>
+    </div>
+  </div>
+  <div id="photo-jukebox">
+    <div class="sign-wrap">
+      <div class="sign">
+        <h2>Photo-Jukebox</h2>
+      </div>
+    </div>
+  </div>
+  <div class="title title--center">
+    Neue Jukebox laden für <%= @jukebox.user.name %>
+  </div>
+  <div class="instructions">
+    <div class="instructions__title">
+      Verwendung
+    </div>
+    <ul>
+      <li>Drück "Enter" um 1 Credit hinzuzufügen</li>
+      <li>Drück den Buchstaben und die Zahl des gewünschten Songs</li>
+      <li>Der ausgewählte Song wird zur Spotify-Warteschlange hinzugefügt</li>
+      <li>Mach dich bereits für ein Foto</li>
+    </ul>
+    
+    <div class="instructions__title">
+      Vorkehrungen & Tips
+    </div>
+    <ul>
+      <li>Browser-Fenster in Vollbild (bevorzugt Firefox oder Chrome)</li>
+      <li>Bereits vorhanden Spotify-Warteschlange löschen</li>
+      <li>Repeat und Shuffle in Spotify deaktivieren</li>
+      <li>Sobald die Jukebox läuft keine Songs direkt über Spotify hinzufügen (ansonsten inkorrekte Warteschlange)</li>
+      <li>Es kann zum nächsten Song gewechselt werden, aber nur langsam (ansonsten inkorrekte Warteschlange)</li>
+      <li>Jukebox kann mit Klick auf "Photo-Jukebox" geschlossen werden</li>
+    </ul>     
   </div>
 
-    <div class="settings">
+    <div class="settings settings--new">
       <%= form_with model: @jukebox, local: true, class: "settings__form" do |f| %>
         <%= f.hidden_field :user_id, value: @jukebox.user_id %>
-        <div class="form-group">
-          <%= f.label :name, "Name der Jukebox (max. 5 Zeichen):" %>
-          <%= f.text_field :name, { maxlength: "5" } %>
-          <div class="hint">Name wird oben in Jukebox angezeigt.</div>
-        </div>
-        <div class="form-group">
-          <%= f.label :device, "Abspielgerät:" %>
-          <%= f.collection_select :device_id, @devices, :id, :name, { required: 'true' } %>
-          <div class="hint">Spotify muss auf gewünschtem Gerät geöffnet sein. Ggf. diese Seite neuladen.</div>
-        </div>
-        <div class="form-group">
-          <%= f.label :playlist, "Playlist:" %>
-          <%= f.collection_select :playlist_id, @playlists, :id, :name, { required: 'true' } %>
-          <div class="hint">Playlist muss auf Spotify erstellt werden. Ggf. diese Seite neu laden.</div>
-        </div>
-        <div class="form-group">
+        <div class="form__group">
           <%= f.label :camera, "Kamera:" %>
           <%= f.select :camera_id, @cameras, { required: 'true' } %>
-          <div class="hint">Browser benötigt Rechte um auf die Kamera zugreifen zu können. Ggf. Anwendung komplett neu öffnen.</div>
+          <div class="hint">Browser benötigt Rechte um auf die Kamera zugreifen zu können | Allenfalls auf folgenden Link klicken:</div>
         </div>
-        <div class="form-group">
-          <%= f.submit "Jukebox laden", :class => 'btn' %>
+        <div class="form__link" id="camera-access">
+          Kamera-Zugriffsrechte beantragen
+        </div>
+        <div class="form__group">
+          <%= f.label :name, "Name der Jukebox (max. 5 Zeichen):" %>
+          <%= f.text_field :name, { maxlength: "5" } %>
+          <div class="hint">Name wird oben in Jukebox angezeigt</div>
+        </div>
+        <div class="form__group">
+          <%= f.label :device, "Abspielgerät:" %>
+          <%= f.collection_select :device_id, @devices, :id, :name, { required: 'true' } %>
+          <div class="hint">Spotify muss auf gewünschtem Gerät geöffnet sein | Allenfalls öffnen und diese Seite neuladen</div>
+        </div>
+        <div class="form__group">
+          <%= f.label :playlist, "Playlist:" %>
+          <%= f.collection_select :playlist_id, @playlists, :id, :name, { required: 'true' } %>
+          <div class="hint">Playlist muss auf Spotify erstellt werden | Allenfalls Playlist zuerst erstellen und Seite neuladen</div>
+        </div>
+        <div class="button button__submit">
+          <%= f.submit "Jukebox laden", :class => 'button__text' %>
         </div>
       <% end %>
   </div>

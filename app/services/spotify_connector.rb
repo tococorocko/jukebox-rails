@@ -56,8 +56,8 @@ class SpotifyConnector < ApplicationService
       refresh_token(user)
     end
 
-    parsed_response = JSON.parse(response.body)["item"]
-    if parsed_response["name"].present?
+    if response.body 
+      parsed_response = JSON.parse(response.body)["item"]
       {name: parsed_response["name"] + " - " + parsed_response["artists"][0]["name"], cover_uri: parsed_response["album"]["images"][0]["url"], uri: parsed_response["uri"]}
     else
       {name: "Waiting for first Song", cover_uri: ""}

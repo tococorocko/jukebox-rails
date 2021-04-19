@@ -11,7 +11,6 @@ function checkCurrentlyPlayingSong() {
   fetch(`/playing-song/${jukeBoxId}`)
     .then(response => response.json())
     .then(data => {
-      console.log(data)
       if (data) {
         let currentSong = document.getElementById("current-song");
         currentSong.innerHTML = `${data.currently_playing_song.name}`;

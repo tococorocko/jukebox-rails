@@ -145,7 +145,7 @@ function addSongtoQueue(songId) {
     })
     .then(data => {
       updateCredits("remove");
-      takePhoto();
+      startCamera(songId);
       updateQueue();
     })
     .catch(error => {
@@ -153,19 +153,19 @@ function addSongtoQueue(songId) {
     });
 }
 
-function takePhoto() {
+function startCamera(songId) {
   showVideo();
   setTimeout(function(){
     displayOverlay("inline-block");
-    // paintToCanvas();
+    paintToCanvas();
   }, 4000);
-  // setTimeout(function(){
-  //   showCountdown();
-  //   startCountdown();
-  // }, 6000);
-  // setTimeout(function(){
-  //   takePhoto();
-  // }, 13400)
+  setTimeout(function(){
+    displayCountdown("inline-block");
+    startCountdown();
+  }, 6000);
+  setTimeout(function(){
+    takePhoto(songId);
+  }, 13400)
   setTimeout(function(){
     displayOverlay("none");
   }, 14000)
@@ -185,6 +185,19 @@ function showVideo() {
   })
 }
 
+function paintToCanvas() {
+  let canvas = document.getElementById("photo");
+  let ctx = canvas.getContext("2d");
+  let video = document.getElementById("photo-player");
+  let width = video.videoWidth;
+  let height = video.videoHeight;
+  canvas.width = width;
+  canvas.height = height;
+  setInterval(()=> {
+    ctx.drawImage(video, 0, 0, width, height)
+  }, 16)
+}
+
 function displayOverlay(style) {
   let photoOverlay = document.getElementById("photo-overlay");
   let video = document.getElementById("photo-player");
@@ -195,7 +208,89 @@ function displayOverlay(style) {
   canvas.style.display = style;
 }
 
+function takePhoto(songId) {
+  let jukeBoxId = document.getElementById("container").getAttribute('data-jukebox-id');
+  let canvas = document.getElementById("photo");
+  let image = canvas.toDataURL("image/png");
+  console.log(image)
+  let base64Data = image.replace(/^data:image\/png;base64,/, "");
+  console.log(base64Data)
+  let today = new Date();
+  let time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
+  let token = document.querySelector('meta[name="csrf-token"]').content
+  fetch(`/take-photo/${jukeBoxId}`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        song_id: songId,
+        image: base64Data
+      })
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
+function displayCountdown(style) {
+  let countdown = document.querySelector(".countdown-container");
+  countdown.style.display = style;
+}
+
+let countdownTimer;
+function startCountdown() {
+  countdownTimer = setInterval(function () {
+    secondPlay()},
+  1000);
+}
+
+function secondPlay() {
+  let countdownContainer = document.querySelector(".countdown-container");
+  let allLi = document.querySelectorAll(`ul.secondPlay li`)
+  let aa = document.querySelector(`ul.secondPlay li.active`);
+
+  countdownContainer.classList.remove("play");
+  removeClassBefore(allLi)
+  if (aa == null) {
+    removeClassBefore(allLi)
+    aa = document.querySelector("ul.secondPlay li")
+    aa.classList.add("before")
+    aa.classList.remove("active")
+    aa.nextElementSibling.classList.add("active")
+    countdownContainer.classList.add("play")
+  }
+  else if (!aa.nextElementSibling) {
+    flash()
+    removeClassBefore(allLi)
+    aa.classList.add("before")
+    aa.classList.remove("active")
+    aa = document.querySelector("ul.secondPlay li");
+    clearInterval(countdownTimer);
+    displayCountdown("none");
+  }
+  else {
+    removeClassBefore(allLi)
+    aa.classList.add("before")
+    aa.classList.remove("active")
+    aa.nextElementSibling.classList.add("active")
+    countdownContainer.classList.add("play")
+  }
+}
+
+function flash() {
+  let photoOverlay = document.getElementById("photo-overlay");
+  photoOverlay.style.background = 'white';
+}
+
 function removeSelection() {
-  const selection = document.querySelectorAll(".selected");
+  let selection = document.querySelectorAll(".selected");
   selection.forEach(selected => selected.classList.remove('selected'));
+}
+
+function removeClassBefore(element) {
+  element.forEach(function(el) {
+    el.classList.remove("before");
+  });
 }
