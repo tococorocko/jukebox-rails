@@ -26,7 +26,7 @@ const catchInput = (e) => {
   case 13: // enter
     updateCredits("add")
     break;
-  case 164: // $
+  case 223: // $
     updateCredits("add");
     break;
   case 32: //space
