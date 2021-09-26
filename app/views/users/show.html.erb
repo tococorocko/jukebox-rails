@@ -43,9 +43,9 @@
     <div class="card">
       <div class="card__actions">
         <% if jukebox.images.present? %>
-          <%= link_to "#" do %>
-        <% end %>
-          <%= image_pack_tag 'download.png', class:"icon" %>
+          <%= link_to download_path(jukebox) do %>
+            <%= image_pack_tag 'download.png', class:"icon" %>
+          <% end %>
         <% end %>
         <%= link_to jukebox_path(jukebox), method: :delete, data: {confirm: "Jukebox wirklich samt allen dazugehörigen Fotos unwiderruflich löschen?"} do %>
           <%= image_pack_tag 'delete.png', class:"icon" %>

@@ -222,6 +222,7 @@ GEM
       omniauth-oauth2 (>= 1.6)
       rest-client (~> 2.0.2)
     ruby2_keywords (0.0.4)
+    rubyzip (2.3.2)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.4.0)
@@ -285,6 +286,7 @@ DEPENDENCIES
   rails (~> 6.0.3, >= 6.0.3.1)
   rails-i18n (~> 6.0.0)
   rspotify
+  rubyzip
   sass-rails (>= 6)
   spring
   spring-watcher-listen (~> 2.0.0)
