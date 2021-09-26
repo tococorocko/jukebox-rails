@@ -28,7 +28,7 @@ class UsersController < ApplicationController
   end
 
   def create_temporary_zip_file(filepaths)
-    # require 'zip'
+    require 'zip'
     temp_file = Tempfile.new('jukebox-images.zip')
     begin
       # Initialize the temp file as a zip file
