@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   def show
-    @jukeboxes = Jukebox.where(user: current_user).with_attached_images
+    @jukeboxes = Jukebox.where(user: current_user).order(created_at: :desc).with_attached_images
   end
 
   def download

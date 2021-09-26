@@ -53,7 +53,7 @@
       </div>
       <div class="card__title_bar">
         <div class="card__title_bar__title">
-          Jukebox <%= index + 1 %>: <%= jukebox.name %>
+          Jukebox: <%= jukebox.name %>
         </div>
         <div class="card__title_bar__date">
           <%= jukebox.created_at.to_date %>
@@ -70,7 +70,7 @@
                     <%= img.filename %>
                   </div>
                 <div class="time">
-                  Uhrzeit: <%= img.created_at.strftime("%H:%M Uhr, %B %-d, %Y") %>
+                  <%= img.created_at.strftime("%H:%M Uhr, %-d. %B, %Y") %>
 				        </div>
               </li>
             <% end %>
