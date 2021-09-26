@@ -32,6 +32,7 @@ gem 'omniauth-spotify'
 gem 'omniauth-rails_csrf_protection'
 gem "httparty"
 gem 'aws-sdk-s3', require: false
+gem 'rubyzip'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

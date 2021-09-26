@@ -43,9 +43,9 @@
     <div class="card">
       <div class="card__actions">
         <% if jukebox.images.present? %>
-          <%= link_to "#" do %>
-        <% end %>
-          <%= image_pack_tag 'download.png', class:"icon" %>
+          <%= link_to download_path(jukebox) do %>
+            <%= image_pack_tag 'download.png', class:"icon" %>
+          <% end %>
         <% end %>
         <%= link_to jukebox_path(jukebox), method: :delete, data: {confirm: "Jukebox wirklich samt allen dazugehörigen Fotos unwiderruflich löschen?"} do %>
           <%= image_pack_tag 'delete.png', class:"icon" %>
@@ -53,7 +53,7 @@
       </div>
       <div class="card__title_bar">
         <div class="card__title_bar__title">
-          Jukebox <%= index + 1 %>: <%= jukebox.name %>
+          Jukebox: <%= jukebox.name %>
         </div>
         <div class="card__title_bar__date">
           <%= jukebox.created_at.to_date %>
@@ -70,7 +70,7 @@
                     <%= img.filename %>
                   </div>
                 <div class="time">
-                  Uhrzeit: <%= img.created_at.strftime("%H:%M Uhr, %B %-d, %Y") %>
+                  <%= img.created_at.strftime("%H:%M Uhr, %-d. %B, %Y") %>
 				        </div>
               </li>
             <% end %>
