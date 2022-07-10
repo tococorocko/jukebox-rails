@@ -4,7 +4,6 @@
 // that code so it'll be compiled.
 
 require("@rails/ujs").start()
-// require("turbolinks").start()
 require("@rails/activestorage").start()
 
 
@@ -12,12 +11,9 @@ require("@rails/activestorage").start()
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
 // or the `imagePath` JavaScript helper below.
 //
-const images = require.context('../images', true)
-const imagePath = (name) => images(name, true)
+// const images = require.context('../assets/images', true)
+// const imagePath = (name) => images(name, true)
 
 // JS
-import('javascript/jukebox/user-input')
-import('javascript/jukebox/continious-updates')
-
-// CSS
-import 'scss/jukebox'
+import('./javascript/jukebox/user-input')
+import('./javascript/jukebox/continious-updates')

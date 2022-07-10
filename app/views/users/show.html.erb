@@ -5,7 +5,7 @@
   <div class="spotify">
     <%= link_to "https://www.spotify.com/", target: "_blank" do %>
       <span>Powered by</span>
-      <%= image_pack_tag 'spotify-logo.png', class:"spotify-logo" %>
+      <%= image_tag 'spotify-logo.png', class:"spotify-logo" %>
     <% end %>
   </div>
   <div id="jukebox-title">
@@ -44,11 +44,11 @@
       <div class="card__actions">
         <% if jukebox.images.present? %>
           <%= link_to download_path(jukebox) do %>
-            <%= image_pack_tag 'download.png', class:"icon" %>
+            <%= image_tag 'download.png', class:"icon" %>
           <% end %>
         <% end %>
         <%= link_to jukebox_path(jukebox), method: :delete, data: {confirm: "Jukebox wirklich samt allen dazugehörigen Fotos unwiderruflich löschen?"} do %>
-          <%= image_pack_tag 'delete.png', class:"icon" %>
+          <%= image_tag 'delete.png', class:"icon" %>
         <% end %>
       </div>
       <div class="card__title_bar">
@@ -65,7 +65,7 @@
           <ul class="splide__list">
             <% jukebox.images.each do |img| %>
               <li class="splide__slide">
-                <%= image_tag img %>			
+                <%= image_tag img %>
                   <div class="track">
                     <%= img.filename %>
                   </div>

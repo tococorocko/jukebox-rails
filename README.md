@@ -1,24 +1,40 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Spotify-Jukebox https://photo-jukebox.herokuapp.com/
 
-Things you may want to cover:
+Ruby version: ruby '3.1'
+Rails version: rails '~> 7.0.0'
 
-* Ruby version
+** Configuration
 
-* System dependencies
+Database creation
+bundle exec rails db:create
+bundle exec rails db:migrate
+bundle exec rails db:seed
 
-* Configuration
+TODO: How to run the test suite
+bundle exec rspec
 
-* Database creation
+Deployment instructions
+git push main
+git push heroku main
+heroku run rake db:migrate heroku run rake db:seed
+heroku open
 
-* Database initialization
+** Commands
 
-* How to run the test suite
+Run dev server:
 
-* Services (job queues, cache servers, search engines, etc.)
+`bin/dev`
 
-* Deployment instructions
+Build assets:
 
-* ...
+`npm run build`
+
+Install packages:
+
+`npm install`
+
+Install Gems:
+
+`bundle install`
