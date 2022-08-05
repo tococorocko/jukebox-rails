@@ -1,3 +1,4 @@
+require 'zip'
 class UsersController < ApplicationController
   def show
     @jukeboxes = Jukebox.where(user: current_user).order(created_at: :desc).with_attached_images
@@ -17,7 +18,7 @@ class UsersController < ApplicationController
     temp_folder = File.join(Dir.tmpdir, "user_#{current_user.id}-jukebox")
     FileUtils.mkdir_p(temp_folder) unless Dir.exist?(temp_folder)
     images.map do |img|
-      filename = "#{img.created_at.strftime("%Y-%m-%d-%H-%M")} - #{img.filename.to_s}"
+      filename = "#{img.created_at.strftime('%Y-%m-%d-%H-%M')} - #{img.filename}"
 
       filepath = File.join(temp_folder, filename)
       File.open(filepath, 'wb') do |f|
@@ -28,13 +29,12 @@ class UsersController < ApplicationController
   end
 
   def create_temporary_zip_file(filepaths)
-    require 'zip'
     temp_file = Tempfile.new('jukebox-images.zip')
     begin
       # Initialize the temp file as a zip file
       Zip::OutputStream.open(temp_file) { |zos| }
       Zip::File.open(temp_file.path, Zip::File::CREATE) do |zip|
-        filepaths.each_with_index do |filepath|
+        filepaths.each do |filepath|
           filename = File.basename(filepath)
           # add file into the zip
           zip.add(filename, filepath)
