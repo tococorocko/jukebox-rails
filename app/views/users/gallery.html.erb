@@ -1,0 +1,49 @@
+<div id="photo-jukebox">
+  <div class="sign-wrap">
+      <div class="sign">
+      <h2>Photo-Jukebox</h2>
+      </div>
+  </div>
+</div>
+
+<div class="gallery">
+  <div class="splide">
+    <div class="splide__track">
+      <div class="splide__list">
+        <% @images.each do |img| %>
+          <div class="splide__slide">
+            <div class="image">
+              <%= image_tag img %>
+            </div>
+            <div class="track">
+              <%= img.filename %>
+            </div>
+            <div class="time">
+              <%= img.created_at.strftime("%H:%M Uhr, %-d. %B, %Y") %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+	document.addEventListener( 'DOMContentLoaded', function () {
+    document.querySelectorAll(".splide").forEach( function (elem) {
+      new Splide( elem, {
+	      padding: {
+		      right: '25%',
+		      left : '25%',
+	      },
+        type  : 'fade',
+        rewind: true,
+        perPage : 1,
+        autoplay: true,
+        arrows: false,
+        cover: true,
+      } ).mount();
+    })
+	});
+</script>

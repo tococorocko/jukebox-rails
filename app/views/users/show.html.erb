@@ -43,6 +43,9 @@
     <div class="card">
       <div class="card__actions">
         <% if jukebox.images.present? %>
+          <%= link_to gallery_path(jukebox) do %>
+            <%= image_tag 'magnifier.png', class:"icon" %>
+          <% end %>
           <%= link_to download_path(jukebox) do %>
             <%= image_tag 'download.png', class:"icon" %>
           <% end %>
@@ -60,23 +63,23 @@
         </div>
       </div>
       <% if jukebox.images.present? %>
-      <div class="splide <%= index %>">
-        <div class="splide__track">
-          <ul class="splide__list">
-            <% jukebox.images.each do |img| %>
-              <li class="splide__slide">
-                <%= image_tag img %>
-                  <div class="track">
-                    <%= img.filename %>
+        <div class="splide <%= index %>">
+          <div class="splide__track">
+            <ul class="splide__list">
+              <% jukebox.images.each do |img| %>
+                <li class="splide__slide">
+                  <%= image_tag img %>
+                    <div class="track">
+                      <%= img.filename %>
+                    </div>
+                  <div class="time">
+                    <%= img.created_at.strftime("%H:%M Uhr, %-d. %B, %Y") %>
                   </div>
-                <div class="time">
-                  <%= img.created_at.strftime("%H:%M Uhr, %-d. %B, %Y") %>
-				        </div>
-              </li>
-            <% end %>
-          </ul>
+                </li>
+              <% end %>
+            </ul>
+          </div>
         </div>
-      </div>
       <% else %>
         <div class="card__no_content">
           Keine Photos vorhanden

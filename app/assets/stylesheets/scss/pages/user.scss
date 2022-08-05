@@ -325,6 +325,35 @@ a {
   }
 }
 
+.gallery {
+  .splide {
+    padding-top: 3rem;
+    padding-bottom: 5rem;
+    .track {
+      color: $light-orange;
+      font-size: 2.5rem;
+      padding: 2rem 0 0.5rem;
+      text-align: right;
+    }
+    .time {
+      color: $dark-orange;
+      font-size: 2rem;
+      text-align: right;
+    }
+    .splide__slide img {
+      display: block;
+      width : 80%;
+      height: auto;
+      margin: auto;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    }
+
+    .splide__pagination__page {
+      background: $silver;
+    }
+  }
+}
+
 .settings {
   margin-top: 5rem;
   &--spotify {

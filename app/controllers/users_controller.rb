@@ -4,6 +4,11 @@ class UsersController < ApplicationController
     @jukeboxes = Jukebox.where(user: current_user).order(created_at: :desc).with_attached_images
   end
 
+  def gallery
+    jukebox = Jukebox.find(params[:jukebox_id])
+    @images = jukebox.images
+  end
+
   def download
     jukebox = Jukebox.find(params[:jukebox_id])
     temp_images = save_files_on_server(jukebox.images)
