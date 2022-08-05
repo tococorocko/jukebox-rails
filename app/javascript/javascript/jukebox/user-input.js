@@ -206,15 +206,16 @@ function displayOverlay(style) {
   photoOverlay.style.display = style;
   video.style.display = style;
   canvas.style.display = style;
+  photoOverlay.style.background = 'black';
 }
 
 function takePhoto(songId) {
   let jukeBoxId = document.getElementById("container").getAttribute('data-jukebox-id');
   let canvas = document.getElementById("photo");
   let image = canvas.toDataURL("image/png");
-  console.log(image)
+  // console.log(image)
   let base64Data = image.replace(/^data:image\/png;base64,/, "");
-  console.log(base64Data)
+  // console.log(base64Data)
   let today = new Date();
   let time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
   let token = document.querySelector('meta[name="csrf-token"]').content
@@ -260,8 +261,7 @@ function secondPlay() {
     aa.classList.remove("active")
     aa.nextElementSibling.classList.add("active")
     countdownContainer.classList.add("play")
-  }
-  else if (!aa.nextElementSibling) {
+  } else if (!aa.nextElementSibling) {
     flash()
     removeClassBefore(allLi)
     aa.classList.add("before")
@@ -269,8 +269,7 @@ function secondPlay() {
     aa = document.querySelector("ul.secondPlay li");
     clearInterval(countdownTimer);
     displayCountdown("none");
-  }
-  else {
+  } else {
     removeClassBefore(allLi)
     aa.classList.add("before")
     aa.classList.remove("active")

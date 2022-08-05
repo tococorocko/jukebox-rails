@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Spotify-Jukbox</title>
+    <title>Spotify-Jukebox</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%#= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_pack_tag 'application' %>
-    <%= javascript_pack_tag 'application' %>
+    <%= stylesheet_link_tag 'site' %>
+    <%= javascript_include_tag "application" %>
   </head>
-
-  <body>
-    <div class="flash">
-      <% if notice %>
-        <p class="alert alert-success"><%= notice %></p>
-      <% end %>
-      <% if alert %>
-        <p class="alert alert-danger"><%= alert %></p>
-      <% end %>
-    </div>
-    <%= yield %>
+    <div class="bg"></div>
+    <div class="bg bg2"></div>
+    <div class="bg bg3"></div>
+      <div class="flash">
+        <% if notice %>
+          <p class="alert alert-success"><%= notice %></p>
+        <% end %>
+        <% if alert %>
+          <p class="alert alert-danger"><%= alert %></p>
+        <% end %>
+      </div>
+      <%= yield %>
   </body>
 </html>

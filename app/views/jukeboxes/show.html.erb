@@ -83,7 +83,9 @@
     <div id="jukebox-title">
       <div class="sign-wrap">
         <div class="sign">
-          <h2 data-before=<%= @jukebox_title %> data-after=<%= @jukebox_title %>><%= @jukebox_title %></h2>
+          <%= link_to root_path do %>
+            <h2 data-before=<%= @jukebox_title %> data-after=<%= @jukebox_title %>><%= @jukebox_title %></h2>
+          <% end %>
         </div>
       </div>
     </div>
