@@ -1,7 +1,9 @@
 <div id="photo-jukebox">
   <div class="sign-wrap">
       <div class="sign">
-        <h2>Photo-Jukebox</h2>
+        <%= link_to root_path do %>
+          <h2>Photo-Jukebox</h2>
+        <% end %>
       </div>
   </div>
 </div>
@@ -42,8 +44,11 @@
         perPage : 1,
         autoplay: true,
         arrows: false,
-        cover: true,
       } ).mount();
     })
 	});
+
+  setInterval(function() {
+    window.location.reload();
+  }, 300000);
 </script>

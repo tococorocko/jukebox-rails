@@ -6,7 +6,7 @@ class UsersController < ApplicationController
 
   def gallery
     jukebox = Jukebox.find(params[:jukebox_id])
-    @images = jukebox.images
+    @images = jukebox.images.shuffle
   end
 
   def download
