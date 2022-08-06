@@ -3,9 +3,14 @@
 // a relevant structure within app/javascript and only use these pack files to reference
 // that code so it'll be compiled.
 
-require("@rails/ujs").start()
+// require("@rails/ujs").start()
 // require("@rails/activestorage").start()
-require("@splidejs/splide/dist/js/splide.min.js");
+// require("@splidejs/splide/dist/js/splide.min.js");
+
+
+import Rails from "@rails/ujs"
+Rails.start()
+import "@splidejs/splide/dist/js/splide.min.js"
 // require("@splidejs/splide/dist/css/splide.min.css");
 
 // Uncomment to copy all static images under ../images to the output folder and reference
@@ -18,4 +23,4 @@ require("@splidejs/splide/dist/js/splide.min.js");
 
 // JS
 // import "@splidejs/splide/dist/css/splide.min.css"
-import('./javascript/settings')
+import './application/settings'

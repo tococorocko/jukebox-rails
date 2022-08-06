@@ -5,12 +5,12 @@ window.addEventListener('load', (event) => {
 function getCameraAccess () {
   let cameraSelectionField = document.getElementById("jukebox_camera_id");
   let getCameraLink = document.getElementById("camera-access");
-  
+
   cameraSelectionField && getCameraLink.addEventListener('click',(e) => {
     if (cameraSelectionField && navigator.mediaDevices.getUserMedia) {
         console.log('getUserMedia supported.');
         const constraints = {video: true};
-    
+
         function onSuccess (stream) {
           if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
             console.log("enumerateDevices() not supported.");
@@ -26,7 +26,7 @@ function getCameraAccess () {
               console.log(err.name + ": " + err.message);
           });
         }
-    
+
         function selectCamera(cameras) {
           console.log("1!", cameras)
           for (let i = 0; i < cameras.length; i++) {
@@ -37,15 +37,15 @@ function getCameraAccess () {
             cameraSelectionField.appendChild(list);
           }
         }
-    
+
         function onError (err) {
             console.log('The following error occured: ' + err);
         }
-    
+
       navigator.mediaDevices.getUserMedia(constraints).then(onSuccess, onError);
-    
+
     } else {
       console.log('getUserMedia not supported on your browser!');
     }
   });
-}  
+}
