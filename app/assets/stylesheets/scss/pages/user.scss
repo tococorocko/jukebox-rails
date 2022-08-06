@@ -84,14 +84,14 @@ a {
     font-family: 'Monoton', cursive;
     letter-spacing: 1rem;
     position: relative;
-    text-shadow: 0px 3px 12px #ff7100;
     text-align: center;
-    -webkit-text-stroke-color: $light-orange;
     animation: flicker-title-sign 20s linear infinite;
-    color: transparent;
+    color: #ff7100;
     font-size: 16rem;
     filter: blur(.75px);
-    -webkit-text-stroke-width: 0.6px;
+    // text-shadow: #ff7100 0px 3px 12px;
+    // -webkit-text-stroke-color: $light-orange;
+    // -webkit-text-stroke-width: 0.6px;
   }
 }
 
@@ -327,7 +327,7 @@ a {
 
 .gallery {
   .splide {
-    padding-top: 3rem;
+    padding-top: 5rem;
     padding-bottom: 5rem;
     .track {
       color: $light-orange;
@@ -360,6 +360,7 @@ a {
     margin-top: 10rem;
   }
   &--new {
+    padding-bottom: 50px;
     vertical-align: middle;
     width: 50%;
     margin: auto;
