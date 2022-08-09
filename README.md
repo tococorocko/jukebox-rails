@@ -38,3 +38,8 @@ Install packages:
 Install Gems:
 
 `bundle install`
+
+Install Redis (background job zip-creation):
+`brew install redis`
+
+`redis-server`
