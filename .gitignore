@@ -18,6 +18,10 @@
 !/tmp/pids/
 !/tmp/pids/.keep
 
+/tmp/zip/*
+!/tmp/zip/
+!/tmp/zip/.keep
+
 # Ignore uploaded files in development.
 /storage/*
 !/storage/.keep
