@@ -4,6 +4,7 @@ class GenerateZipJob < ApplicationJob
   queue_as :default
 
   def perform(jukebox_name, jukebox_id)
+    logger.info "Processing the job with name: #{jukebox_name} and id: #{jukebox_id}"
     @jukebox_name = jukebox_name
     @images = Jukebox.find(jukebox_id).images
     temp_images = save_files_on_server
