@@ -19,5 +19,7 @@ Rails.application.routes.draw do
   get 'next-song/:jukebox_id', action: :next_song, controller: 'jukeboxes'
   post 'take-photo/:jukebox_id', action: :take_photo, controller: 'jukeboxes'
 
-  mount Sidekiq::Web => "/sidekiq"
+  authenticate :user do
+    mount Sidekiq::Web => "/sidekiq-dashboard"
+  end
 end
