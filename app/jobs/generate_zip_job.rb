@@ -37,10 +37,10 @@ class GenerateZipJob < ApplicationJob
           zipfile.add(filename, filepath)
         end
       end
-      logger.info "4. Done!"
+      logger.info "4. Done! file_name #{file_name} exists? #{File.exist?(file_name)}}"
     ensure
-      temp_images.each { |filepath| FileUtils.rm(filepath) }
-      FileUtils.rm_rf("#{zip_directory}#{@jukebox_name}") if Dir.exist?("#{zip_directory}#{@jukebox_name}")
+      # temp_images.each { |filepath| FileUtils.rm(filepath) }
+      # FileUtils.rm_rf("#{zip_directory}#{@jukebox_name}") if Dir.exist?("#{zip_directory}#{@jukebox_name}")
     end
   end
 
