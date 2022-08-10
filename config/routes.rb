@@ -1,3 +1,5 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   resources :jukeboxes
 
@@ -16,4 +18,6 @@ Rails.application.routes.draw do
   get 'queue/:jukebox_id', action: :queue, controller: 'jukeboxes'
   get 'next-song/:jukebox_id', action: :next_song, controller: 'jukeboxes'
   post 'take-photo/:jukebox_id', action: :take_photo, controller: 'jukeboxes'
+
+  mount Sidekiq::Web => "/sidekiq"
 end
