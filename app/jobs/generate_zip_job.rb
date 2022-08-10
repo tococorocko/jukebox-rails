@@ -14,7 +14,7 @@ class GenerateZipJob < ApplicationJob
   def save_files_on_server
     temp_folder = "#{zip_directory}#{@jukebox_name}"
     FileUtils.mkdir_p(temp_folder) unless Dir.exist?(temp_folder)
-    logger.info "2. Save Files on Server with temp_folder: #{jukebox_name} and #{@images.count} images."
+    logger.info "2. Save Files on Server with temp_folder: #{@jukebox_name} and #{@images.count} images."
     @images.map do |img|
       filename = "#{img.created_at.strftime('%Y-%m-%d-%H-%M')} - #{img.filename}"
 
