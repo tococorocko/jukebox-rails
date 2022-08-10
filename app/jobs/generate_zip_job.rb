@@ -45,6 +45,6 @@ class GenerateZipJob < ApplicationJob
   end
 
   def zip_directory
-    "#{Rails.root}/tmp/zip/"
+    "#{Rails.root}/tmp/"
   end
 end
