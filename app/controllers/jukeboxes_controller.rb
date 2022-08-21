@@ -1,7 +1,6 @@
 class JukeboxesController < ApplicationController
 
   def new
-    # reset_existing_jukebox
     fetch_active_devices(current_user)
     fetch_playlists(current_user)
     @user = User.find(current_user.id)
@@ -22,29 +21,39 @@ class JukeboxesController < ApplicationController
   end
 
   def show
-    @jukebox = Jukebox.find(params[:id])
-    @jukebox_title = @jukebox.name.presence || "Music"
-    fetch_songs(@jukebox)
-    @currently_playing_song = fetch_playing_song(@jukebox.user)
-    @songs = @jukebox.songs.limit(240).order(:artist, :name)
-    numbered_songs = LetterNumberCodes.add_number_and_letter_codes(@songs.pluck(:name, :artist, :id))
-    @songs_per_page = numbered_songs.each_slice(60).to_a
-    @num_of_pages = "page_#{(numbered_songs.length - 1) / 60 + 1}"
+    @jukebox = Jukebox.where(id: params[:id], user: current_user).first
+    if @jukebox.blank?
+      flash[:notice] = 'Jukebox nicht gefunden. Bitte probieren Sie es erneut.'
+      redirect_to action: :new
+    else
+      @jukebox_title = @jukebox.name.presence || "Music"
+      fetch_songs(@jukebox)
+      @currently_playing_song = fetch_playing_song(@jukebox.user)
+      @songs = @jukebox.songs.limit(240).order(:artist, :name)
+      numbered_songs = LetterNumberCodes.add_number_and_letter_codes(@songs.pluck(:name, :artist, :id))
+      @songs_per_page = numbered_songs.each_slice(60).to_a
+      @num_of_pages = "page_#{(numbered_songs.length - 1) / 60 + 1}"
 
-    queue = []
-    @jukebox.queued_songs.limit(5).each do |queued_song|
-      jukebox_song = Song.find_by_uri(queued_song.song_uri)
-      queue.push([jukebox_song.name, jukebox_song.artist])
+      queue = []
+      @jukebox.queued_songs.limit(5).each do |queued_song|
+        jukebox_song = Song.find_by_uri(queued_song.song_uri)
+        queue.push([jukebox_song.name, jukebox_song.artist])
+      end
+      @queued_songs = queue
+
+      render :layout => "application-jukebox"
     end
-    @queued_songs = queue
-
-    render :layout => "application-jukebox"
   end
 
   def destroy
-    @jukebox = Jukebox.find(params[:id])
-    @jukebox.destroy
-
+    jukebox = Jukebox.where(id: params[:id], user: current_user).first
+    if jukebox.blank?
+      flash[:notice] = 'Jukebox nicht gefunden. Bitte probieren Sie es erneut.'
+    else
+      jukebox = Jukebox.find(params[:id])
+      jukebox.destroy
+      flash[:notice] = 'Jukebox gelöscht.'
+    end
     redirect_to root_path
   end
 
@@ -132,12 +141,6 @@ class JukeboxesController < ApplicationController
   def jukebox_params
     params.require(:jukebox).permit(:name, :user_id, :device_id, :playlist_id, :camera_id, images: [])
   end
-
-  # def reset_existing_jukebox
-  #   Jukebox.where(user: current_user).destroy_all
-  #   current_user.playlists.destroy_all
-  #   current_user.devices.destroy_all
-  # end
 
   def fetch_active_devices(user)
     SpotifyConnector.fetch_active_devices(user)

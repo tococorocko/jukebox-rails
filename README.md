@@ -2,6 +2,8 @@
 
 Spotify-Jukebox https://photo-jukebox.herokuapp.com/
 
+Sidekiq: https://photo-jukebox.herokuapp.com/sidekiq-dashboard
+
 Ruby version: ruby '3.1'
 Rails version: rails '~> 7.0.0'
 
@@ -38,3 +40,12 @@ Install packages:
 Install Gems:
 
 `bundle install`
+
+Install Redis (background job zip-creation):
+`brew install redis`
+
+`redis-server`
+
+On Heroku:
+
+- paid sidekiq worker necessary

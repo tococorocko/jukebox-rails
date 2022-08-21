@@ -1,56 +1,55 @@
-require 'zip'
 class UsersController < ApplicationController
   def show
+    jukeboxes = Jukebox.where(user: current_user)
+    jukeboxes.each do |jukebox|
+      jukebox.destroy unless jukebox.images.attached?
+    end
     @jukeboxes = Jukebox.where(user: current_user).order(created_at: :desc).with_attached_images
   end
 
   def gallery
-    jukebox = Jukebox.find(params[:jukebox_id])
-    @images = jukebox.images.shuffle
+    jukebox = Jukebox.where(id: params[:jukebox_id], user: current_user).first
+    if jukebox.blank?
+      flash[:notice] = 'Gallerie nicht gefunden. Bitte probieren Sie es erneut.'
+      redirect_to action: :show
+    else
+      @images = jukebox.images.shuffle
+    end
   end
 
   def download
-    jukebox = Jukebox.find(params[:jukebox_id])
-    temp_images = save_files_on_server(jukebox.images)
-    zip_data = create_temporary_zip_file(temp_images)
+    jukebox = Jukebox.where(id: params[:jukebox_id], user: current_user).first
+    if jukebox.blank?
+      flash[:notice] = 'Jukebox nicht gefunden. Bitte probieren Sie es erneut.'
+      redirect_to action: :show
+    else
+      @user_id = current_user.id
+      @jukebox_id = jukebox.id
+      @images = jukebox.images
+      s3_bucket = AwsBucket.new
+      aws_zip_file = s3_bucket.get(file_name, file_path)
+      # regenerate zip file if older than 10 minutes
+      if aws_zip_file && aws_zip_file.last_modified > 10.minutes.ago
+        aws_zip_file = File.read(file_path)
+        send_data(aws_zip_file, type: 'application/zip', filename: "#{file_name}.zip")
+      else
+        flash[:notice] = 'Zip-Datei wird erstellt, laden Sie die Seite in ein paar Minuten neu und klicken Sie erneut auf Download.'
 
-    send_data(zip_data, type: 'application/zip', filename: 'jukebox-images.zip')
+        # BackgroundJob
+        GenerateZipJob.perform_later(file_name, file_path, @jukebox_id)
+
+        redirect_to root_path
+      end
+    end
   end
 
   private
 
-  def save_files_on_server(images)
-    temp_folder = File.join(Dir.tmpdir, "user_#{current_user.id}-jukebox")
-    FileUtils.mkdir_p(temp_folder) unless Dir.exist?(temp_folder)
-    images.map do |img|
-      filename = "#{img.created_at.strftime('%Y-%m-%d-%H-%M')} - #{img.filename}"
-
-      filepath = File.join(temp_folder, filename)
-      File.open(filepath, 'wb') do |f|
-        img.download { |chunk| f.write(chunk) }
-      end
-      filepath
-    end
+  def file_name
+    "user_#{@user_id}-jukebox_#{@jukebox_id}"
   end
 
-  def create_temporary_zip_file(filepaths)
-    temp_file = Tempfile.new('jukebox-images.zip')
-    begin
-      # Initialize the temp file as a zip file
-      Zip::OutputStream.open(temp_file) { |zos| }
-      Zip::File.open(temp_file.path, Zip::File::CREATE) do |zip|
-        filepaths.each do |filepath|
-          filename = File.basename(filepath)
-          # add file into the zip
-          zip.add(filename, filepath)
-        end
-      end
-      File.read(temp_file.path)
-    ensure
-      # close all ressources & remove temporary files
-      temp_file.close
-      temp_file.unlink
-      filepaths.each { |filepath| FileUtils.rm(filepath) }
-    end
+  def file_path
+    "#{User::ZIP_DIRECTORY}/#{file_name}.zip"
   end
 end

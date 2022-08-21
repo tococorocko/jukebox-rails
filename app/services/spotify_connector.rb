@@ -51,14 +51,14 @@ class SpotifyConnector < ApplicationService
         'Authorization' => "Bearer #{user.access_token}"
       },
     })
-
-    if !response.success?
-      refresh_token(user)
+    unless response.success?
+      user = refresh_token(user)
+      fetch_playing_song(user)
     end
-
-    if response.body 
-      parsed_response = JSON.parse(response.body)["item"]
-      {name: parsed_response["name"] + " - " + parsed_response["artists"][0]["name"], cover_uri: parsed_response["album"]["images"][0]["url"], uri: parsed_response["uri"]}
+    parsed_response = JSON.parse(response.body) rescue nil
+    if parsed_response && parsed_response["is_playing"] == true
+      song = parsed_response["item"]
+      {name: song["name"] + " - " + song["artists"][0]["name"], cover_uri: song["album"]["images"][0]["url"], uri: song["uri"]}
     else
       {name: "Waiting for first Song", cover_uri: ""}
     end
@@ -109,7 +109,7 @@ class SpotifyConnector < ApplicationService
     parsed_response = JSON.parse(response.body)
     user.update(access_token: parsed_response["access_token"])
     user.update(refresh_token: parsed_response["refresh_token"]) if parsed_response["refresh_token"]
-    fetch_playing_song(user)
+    return user
   end
 
   def self.song_request(jukebox, playlist_uid, limit, offset)
@@ -138,16 +138,11 @@ class SpotifyConnector < ApplicationService
   end
 
   def self.create_playlists(playlists, user)
-    playlists.each do |list|
-      existing_playlist = Playlist.where(playlist_uid: list["id"], user: user).last
-      if existing_playlist
-        existing_playlist.touch
-      else
-        Playlist.create(name: list["name"], playlist_uid: list["id"], uri: list["tracks"]["href"], track_number: list["tracks"]["total"], user: user)
-      end
-    end
+    Playlist.where("playlists.user_id = ?", user).destroy_all
 
-    Playlist.where("playlists.user_id = ? AND updated_at < ?", user, 1.minutes.ago).destroy_all
+    playlists.each do |list|
+      Playlist.create(name: list["name"], playlist_uid: list["id"], uri: list["tracks"]["href"], track_number: list["tracks"]["total"], user: user)
+    end
   end
 
   def self.create_songs(songs, jukebox)
