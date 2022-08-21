@@ -1,11 +1,20 @@
 class UsersController < ApplicationController
   def show
+    jukeboxes = Jukebox.where(user: current_user)
+    jukeboxes.each do |jukebox|
+      jukebox.destroy unless jukebox.images.attached?
+    end
     @jukeboxes = Jukebox.where(user: current_user).order(created_at: :desc).with_attached_images
   end
 
   def gallery
-    jukebox = Jukebox.find(params[:jukebox_id])
-    @images = jukebox.images.shuffle
+    jukebox = Jukebox.where(id: params[:jukebox_id], user: current_user).first
+    if jukebox.blank?
+      flash[:notice] = 'Gallerie nicht gefunden. Bitte probieren Sie es erneut.'
+      redirect_to action: :show
+    else
+      @images = jukebox.images.shuffle
+    end
   end
 
   def download
