@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  ZIP_DIRECTORY = Rails.root.join('tmp', 'zip')
+
   devise :database_authenticatable, :omniauthable, omniauth_providers: %i[spotify]
 
   has_many :jukeboxes
