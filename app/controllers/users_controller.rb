@@ -33,7 +33,7 @@ class UsersController < ApplicationController
       # regenerate zip file if older than 10 minutes
       if aws_zip_file && aws_zip_file.last_modified > 10.minutes.ago
         aws_zip_file = File.read(file_path)
-        send_data(aws_zip_file, type: 'application/zip', filename: file_name)
+        send_data(aws_zip_file, type: 'application/zip', filename: "#{file_name}.zip")
       else
         flash[:notice] = 'Zip-Datei wird erstellt, laden Sie die Seite in Kürze neu und klicken Sie erneut auf Download.'
         temp_images = download_images_to_tmp
