@@ -80,6 +80,7 @@ test:
 #
 production:
   <<: *default
+  url: <%= ENV['DATABASE_URL'] %>
   database: jukebox_rails_production
   username: jukebox_rails
   password: <%= ENV['JUKEBOX_RAILS_DATABASE_PASSWORD'] %>

@@ -1,8 +1,8 @@
 # README
 
-Spotify-Jukebox https://photo-jukebox.herokuapp.com/
+Spotify-Jukebox: https://spotify-jukebox.up.railway.app/
 
-Sidekiq: https://photo-jukebox.herokuapp.com/sidekiq-dashboard
+Sidekiq: https://spotify-jukebox.up.railway.app/sidekiq-dashboard
 
 Ruby version: ruby '3.1'
 
@@ -18,16 +18,10 @@ bundle exec rails db:migrate
 bundle exec rails db:seed
 ```
 
-## Deployment instructions
+## Deployment Railway
 
-```
-git push main
-git push heroku main
-heroku run rake db:migrate heroku run rake db:seed
-heroku open
-```
+- Changes to main branch are automaticall deployed to https://railway.app/
 
-Paid sidekiq worker necessary for BackgroundJob to generate zip
 
 ## Commands
 
@@ -52,3 +46,34 @@ Paid sidekiq worker necessary for BackgroundJob to generate zip
 `brew install redis`
 
 `redis-server`
+
+## Railway.app commands examples
+
+    # Connect railway.app (only once)
+    railway link
+
+    # Use CLI
+    railway run bash
+
+    # Check logs
+    railway logs
+
+    # Example binary command
+    railway run bin/rails db:create
+
+### Legacy
+
+## Deployment instructions (Legacy Heroku)
+
+Spotify-Jukebox: https://photo-jukebox.herokuapp.com/
+Sidekiq: https://photo-jukebox.herokuapp.com/sidekiq-dashboard
+
+```
+git push main
+git push heroku main
+heroku run rake db:migrate heroku run rake db:seed
+heroku open
+```
+
+Paid sidekiq worker necessary for BackgroundJob to generate zip
+
