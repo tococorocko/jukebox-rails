@@ -1,5 +1,4 @@
 class JukeboxesController < ApplicationController
-
   def new
     fetch_active_devices(current_user)
     fetch_playlists(current_user)
@@ -41,7 +40,7 @@ class JukeboxesController < ApplicationController
       end
       @queued_songs = queue
 
-      render :layout => "application-jukebox"
+      render layout: "application-jukebox"
     end
   end
 
@@ -65,16 +64,16 @@ class JukeboxesController < ApplicationController
     elsif operation == "remove"
       new_credit = jukebox.credit - 1
     end
-     jukebox.update_attribute(:credit, new_credit)
-     data = { new_credit: new_credit }
+    jukebox.update_attribute(:credit, new_credit)
+    data = { new_credit: }
 
-    render :json => data
+    render json: data
   end
 
   def queue
     jukebox = Jukebox.find(params[:jukebox_id])
 
-    render :json => jukebox.queued_songs.to_json(include: (:song))
+    render json: jukebox.queued_songs.to_json(include: :song)
   end
 
   def add_song
@@ -85,9 +84,9 @@ class JukeboxesController < ApplicationController
       head :forbidden
     else
       SpotifyConnector.add_song_to_queue(jukebox, song)
-      queued_songs = [songs: JSON::parse(jukebox.queued_songs.to_json(include: [:song]))]
-      credits = [credits: {amount: jukebox.credit}]
-      render :json => (queued_songs + credits).to_json
+      queued_songs = [songs: JSON.parse(jukebox.queued_songs.to_json(include: [:song]))]
+      credits = [credits: { amount: jukebox.credit }]
+      render json: (queued_songs + credits).to_json
     end
   end
 
@@ -101,7 +100,7 @@ class JukeboxesController < ApplicationController
       jukebox_song.update_attribute(:playing, true)
       updated = updated_queue(jukebox, jukebox_song)
     end
-    render :json => { currently_playing_song: currently_playing_song, queue_update: updated }
+    render json: { currently_playing_song:, queue_update: updated }
   end
 
   def next_song
@@ -124,18 +123,15 @@ class JukeboxesController < ApplicationController
     head :ok
   end
 
-
   private
 
   def updated_queue(jukebox, jukebox_song)
     return false unless jukebox.queued_songs.first.present?
 
-    if jukebox.queued_songs.first.song.uri == jukebox_song.uri
-      jukebox.queued_songs.first.destroy
-      return true
-    else
-      return false
-    end
+    return false unless jukebox.queued_songs.first.song.uri == jukebox_song.uri
+
+    jukebox.queued_songs.first.destroy
+    true
   end
 
   def jukebox_params

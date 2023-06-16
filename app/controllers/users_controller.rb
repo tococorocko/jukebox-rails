@@ -33,7 +33,8 @@ class UsersController < ApplicationController
         aws_zip_file = File.read(file_path)
         send_data(aws_zip_file, type: 'application/zip', filename: "#{file_name}.zip")
       else
-        flash[:notice] = 'Zip-Datei wird erstellt, laden Sie die Seite in ein paar Minuten neu und klicken Sie erneut auf Download.'
+        flash[:notice] =
+          "Zip-Datei wird erstellt, laden Sie die Seite in ein paar Minuten neu und klicken Sie erneut auf Download."
 
         # BackgroundJob
         GenerateZipJob.perform_later(file_name, file_path, @jukebox_id)

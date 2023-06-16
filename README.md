@@ -4,9 +4,9 @@ Spotify-Jukebox: https://spotify-jukebox.up.railway.app/
 
 Sidekiq: https://spotify-jukebox.up.railway.app/sidekiq-dashboard
 
-Ruby version: ruby '3.1'
+Ruby version: ruby "3.1"
 
-Rails version: rails '~> 7.0.0'
+Rails version: rails "~> 7.0.0"
 
 ## Configuration
 

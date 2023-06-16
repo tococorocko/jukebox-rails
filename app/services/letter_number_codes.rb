@@ -7,24 +7,22 @@ class LetterNumberCodes < ApplicationService
     end
 
     to_fill = if songs.length < 60
-      60
-    elsif songs.length < 120
-      120
-    elsif songs.length < 180
-      180
-    elsif songs.length < 240
-      240
-    end
+                60
+              elsif songs.length < 120
+                120
+              elsif songs.length < 180
+                180
+              elsif songs.length < 240
+                240
+              end
 
     if to_fill
       (songs.length...to_fill).to_a.each do |index|
         arr.push(["", "", ""] + code_mapping[index])
       end
     end
-    return arr
+    arr
   end
-
-  private
 
   def self.letter_number_code_map
     num_codes = [
@@ -63,7 +61,7 @@ class LetterNumberCodes < ApplicationService
       ["U", 85],
       ["V", 86],
       ["W", 87],
-      ["X", 88],
+      ["X", 88]
     ]
     arr = []
     letter_codes.each do |letter|
@@ -71,6 +69,6 @@ class LetterNumberCodes < ApplicationService
         arr.push(num + letter)
       end
     end
-    return arr
+    arr
   end
 end
