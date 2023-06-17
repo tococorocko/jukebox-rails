@@ -11,11 +11,11 @@ class JukeboxesController < ApplicationController
 
   def create
     @jukebox = Jukebox.new(jukebox_params)
-
-    if @jukebox.save
+    if @jukebox.valid? && @jukebox.save
       redirect_to @jukebox
     else
-      render :new
+      flash[:notice] = 'Jukebox konnte nicht erstellt werden. Bitte probieren Sie es erneut. Fehler: ' + @jukebox.errors.full_messages.join(', ')
+      redirect_to action: :new
     end
   end
 
@@ -32,7 +32,6 @@ class JukeboxesController < ApplicationController
       numbered_songs = LetterNumberCodes.add_number_and_letter_codes(@songs.pluck(:name, :artist, :id))
       @songs_per_page = numbered_songs.each_slice(60).to_a
       @num_of_pages = "page_#{(numbered_songs.length - 1) / 60 + 1}"
-
       queue = []
       @jukebox.queued_songs.limit(5).each do |queued_song|
         jukebox_song = Song.find_by_uri(queued_song.song_uri)
@@ -80,6 +79,7 @@ class JukeboxesController < ApplicationController
     jukebox = Jukebox.find(params[:jukebox_id])
     song = Song.find(params[:song_id])
 
+    # TODO: Remove this check once the queue is implemented
     if song.playing || jukebox.queued_songs.last.try(&:song_uri) == song.uri
       head :forbidden
     else
@@ -92,6 +92,7 @@ class JukeboxesController < ApplicationController
 
   def playing_song
     jukebox = Jukebox.find(params[:jukebox_id])
+
     currently_playing_song = fetch_playing_song(jukebox.user)
     jukebox_song = Song.find_by_uri(currently_playing_song[:uri])
     updated = false
