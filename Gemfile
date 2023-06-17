@@ -38,6 +38,7 @@ group :development, :test do
   gem "rubocop-rails", require: false
   gem "webmock"
   gem "standardrb"
+  gem "brakeman"
 end
 
 group :test do
