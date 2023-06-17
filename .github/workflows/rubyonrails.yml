@@ -37,6 +37,10 @@ jobs:
       # Add or replace database setup steps here
       - name: Set up database schema
         run: bin/rails db:schema:load
+      # Install js packages
+      - name: Install js
+        run: npm install
+      # Build assets
       - name: Build assets
         run: npm run build
       # Add or replace test runners here
