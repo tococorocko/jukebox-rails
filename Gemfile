@@ -35,10 +35,16 @@ group :development, :test do
   # Call "byebug" anywhere in the code to stop execution and get a debugger console
   gem "byebug", platforms: %i[mri mingw x64_mingw]
   gem "debug"
-  gem "factory_bot_rails"
-  gem "rspec-rails", "~> 6.0.0"
   gem "rubocop-rails", require: false
   gem "webmock"
+  gem "standardrb"
+end
+
+group :test do
+  gem "factory_bot_rails"
+  gem "rspec-rails", "~> 6.0.0"
+  gem "rails-controller-testing"
+  gem 'simplecov', require: false
 end
 
 group :development do
