@@ -104,7 +104,6 @@ class SpotifyConnector < ApplicationService
   end
 
   def self.refresh_token(user)
-    byebug
     client_id = Rails.application.credentials.spotify[:client_id]
     client_secret = Rails.application.credentials.spotify[:client_secret]
     auth = Base64.urlsafe_encode64("#{client_id}:#{client_secret}")
