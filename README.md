@@ -47,6 +47,17 @@ bundle exec rails db:seed
 
 `redis-server`
 
+
+### Rspec:
+`bundle exec rspec`
+
+### Rubocop:
+`bundle exec rubocop`
+
+or to auto-generate config file:
+
+`rubocop --auto-gen-config`
+
 ## Railway.app commands examples
 
     # Connect railway.app (only once)

@@ -1,5 +1,4 @@
-Style/Encoding:
-  Enabled: false
+inherit_from: .rubocop_todo.yml
 
 Metrics/ClassLength:
   Enabled: false
@@ -8,7 +7,4 @@ Style/StringLiterals:
   Enabled: false
 
 Style/FrozenStringLiteralComment:
-  Enabled: false
-
-Metrics/BlockLength:
   Enabled: false

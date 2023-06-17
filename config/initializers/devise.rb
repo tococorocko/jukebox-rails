@@ -14,7 +14,7 @@ Devise.setup do |config|
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = '0586e89b3c77eef67427ae2e579c3b9f96e61a38567ab89e671b23db158197d8a72a980d0049fff5beda69aeacb2afdd8d0f29f63bd168b106c1443a2ce66c77'
+  # config.secret_key = ''
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
@@ -126,7 +126,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 12
 
   # Set up a pepper to generate the hashed password.
-  # config.pepper = 'f188d380ab84b7fcda5d700675b160c553afab5a77b2480eacd6fea678a7e2cd1a3d23fb18565c7d4ac3c1ff6f93c51af149a54badfd46d515f4e973a0fa05be'
+  # config.pepper = ''
 
   # Send a notification to the original email when the user's email is changed.
   # config.send_email_changed_notification = false
@@ -272,15 +272,20 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-  config.omniauth :spotify, Rails.application.credentials.spotify[:client_id], Rails.application.credentials.spotify[:client_secret], scope: %w[
-    playlist-modify-private
-    playlist-read-private
-    playlist-modify-public
-    user-library-read
-    user-library-modify
-    user-modify-playback-state
-    user-read-playback-state
-  ].join(" ")
+  config.omniauth(
+    :spotify,
+    Rails.application.credentials.spotify[:client_id],
+    Rails.application.credentials.spotify[:client_secret],
+    scope: %w[
+      playlist-modify-private
+      playlist-read-private
+      playlist-modify-public
+      user-library-read
+      user-library-modify
+      user-modify-playback-state
+      user-read-playback-state
+    ].join(" ")
+  )
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
