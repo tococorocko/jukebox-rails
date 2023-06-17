@@ -1,3 +1,6 @@
+
+![RSpec and Rubocop](https://github.com/tococorocko/jukebox-rails/actions/workflows/rubyonrails.yml/badge.svg)
+
 # README
 
 Spotify-Jukebox: https://spotify-jukebox.up.railway.app/
