@@ -277,15 +277,18 @@ Devise.setup do |config|
     Rails.application.credentials.spotify[:client_id],
     Rails.application.credentials.spotify[:client_secret],
     scope: %w[
-      playlist-modify-private
       playlist-read-private
-      playlist-modify-public
-      user-library-read
-      user-library-modify
       user-modify-playback-state
       user-read-playback-state
+      user-read-currently-playing
     ].join(" ")
   )
+
+  # playlist-read-private --> playlists, songs
+  # user-read-playback-state -> devices
+  # user-read-currently-playing -> currently playing song
+  # user-modify-playback-state -> queue, next
+
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.

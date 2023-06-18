@@ -13,7 +13,7 @@ RSpec.describe "Jukeboxes", type: :request do
       before { sign_in(user) }
       it "renders the new template" do
         stub_device_request
-        stub_playlist_request(user:)
+        stub_playlist_request
         expect(get(new_jukebox_path)).to render_template(:new)
       end
     end

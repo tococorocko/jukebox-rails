@@ -10,7 +10,7 @@ RSpec.describe JukeboxesController, type: :controller do
   describe "GET #new" do
     it "assigns the necessary instance variables" do
       stub_device_request
-      stub_playlist_request(user:)
+      stub_playlist_request
 
       get :new
       expect(assigns(:user)).to eq(user)
@@ -62,17 +62,65 @@ RSpec.describe JukeboxesController, type: :controller do
       let(:jukebox) { create(:jukebox, user:, playlist:) }
       let(:limit) { 100 }
       let(:offset) { 0 }
+
       it "assigns the necessary instance variables" do
         stub_fetch_song(playlist_uid:, limit:, offset:)
-        stub_fetch_playing_song
+        stub_fetch_currently_playing_and_queue
         get :show, params: { id: jukebox.id }
         expect(assigns(:jukebox)).to eq(jukebox)
-        expect(assigns(:jukebox_title)).to eq(jukebox.name.presence || "Music")
-        expect(assigns(:currently_playing_song)).to eq({name: "Song Name - Artist Name", cover_uri: "https://example.com/cover.jpg", uri: "spotify:track:123456"})
-        expect(assigns(:songs)).to eq(jukebox.songs.limit(240).order(:artist, :name))
         expect(assigns(:songs_per_page)).to be_a(Array)
-        expect(assigns(:queued_songs)).to eq([])
         expect(response).to render_template(layout: "application-jukebox")
+      end
+
+      context "when song is playing" do
+        it "assigns the currently playing song and the queue" do
+          stub_fetch_currently_playing_and_queue
+          stub_fetch_song(playlist_uid:, limit:, offset:)
+          get :show, params: { id: jukebox.id }
+          expect(assigns(:currently_playing_song)).to eq({name: "Song Name - Artist Name", cover_uri: "https://example.com/cover.jpg", uri: "spotify:track:123456"})
+        end
+      end
+
+      context "when song is not playing" do
+        it "assigns the currently playing song and the queue with default values" do
+          stub_fetch_currently_playing_and_queue(return_status: 404, with_body: false)
+          stub_fetch_song(playlist_uid:, limit:, offset:)
+          get :show, params: { id: jukebox.id }
+          expect(assigns(:currently_playing_song)).to eq({name: "Waiting for first Song", cover_uri: "", uri: ""})
+          expect(assigns(:queue)).to eq([])
+        end
+      end
+
+
+      context "when jukebox has more than 240 songs" do
+        let(:jukebox) { create(:jukebox, user:, playlist:) }
+        let!(:songs) { create_list(:song, 241, jukebox:) }
+        it "assigns the first 240 songs to @songs" do
+          stub_fetch_currently_playing_and_queue
+          stub_fetch_song(playlist_uid:, limit:, offset:)
+          get :show, params: { id: jukebox.id }
+          expect(assigns(:songs)).to eq(jukebox.songs.limit(240).order(:artist, :name))
+        end
+      end
+
+      context "when jukebox has a name" do
+        let(:jukebox) { create(:jukebox, user:, playlist:, name: "Jukebox Name") }
+        it "assigns the jukebox name to the jukebox title" do
+          stub_fetch_currently_playing_and_queue
+          stub_fetch_song(playlist_uid:, limit:, offset:)
+          get :show, params: { id: jukebox.id }
+          expect(assigns(:jukebox_title)).to eq("Jukebox Name")
+        end
+      end
+
+      context "when jukebox does not have a name" do
+        let(:jukebox) { create(:jukebox, user:, playlist:, name: nil) }
+        it "assigns 'Music' to the jukebox title" do
+          stub_fetch_currently_playing_and_queue
+          stub_fetch_song(playlist_uid:, limit:, offset:)
+          get :show, params: { id: jukebox.id }
+          expect(assigns(:jukebox_title)).to eq("Music")
+        end
       end
     end
 
@@ -133,13 +181,6 @@ RSpec.describe JukeboxesController, type: :controller do
     end
   end
 
-  describe "GET #queue" do
-    it "renders the jukebox's queued songs as JSON" do
-      get :queue, params: { jukebox_id: jukebox.id }
-      expect(response.body).to eq(jukebox.queued_songs.to_json(include: :song))
-    end
-  end
-
   describe "POST #add_song" do
     context "when the song is not already playing or in the queue" do
       before do
@@ -153,22 +194,8 @@ RSpec.describe JukeboxesController, type: :controller do
       end
 
       it "renders the updated queued songs and credits as JSON" do
-        expected_response = [{ songs: JSON.parse(jukebox.queued_songs.to_json(include: [:song])) },
-                             { credits: { amount: jukebox.credit } }]
+        expected_response = [ { credits: { amount: jukebox.credit } }]
         expect(controller).to receive(:render).with(json: expected_response.to_json)
-        post :add_song, params: { jukebox_id: jukebox.id, song_id: song.id }
-      end
-    end
-
-    context "when the song is already playing or in the queue" do
-      before do
-        song.update(playing: true)
-        jukebox.queued_songs.create(song: song)
-        allow(controller).to receive(:head)
-      end
-
-      it "returns a forbidden status" do
-        expect(controller).to receive(:head).with(:forbidden)
         post :add_song, params: { jukebox_id: jukebox.id, song_id: song.id }
       end
     end
@@ -180,8 +207,8 @@ RSpec.describe JukeboxesController, type: :controller do
 
       context "when the jukebox song is found and not already playing" do
         it "updates the currently playing song and the queue" do
-          stub_fetch_playing_song(is_playing: false)
-          song_info = SpotifyConnector.fetch_playing_song(user)
+          stub_fetch_currently_playing_and_queue(return_status: 200, with_body: true)
+          song_info = SpotifyConnector.add_song_to_queue(user)
           get :playing_song, params: { jukebox_id: jukebox.id }
 
           expect(response.body).to eq({ currently_playing_song: song_info, queue_update: false }.to_json)
@@ -190,7 +217,7 @@ RSpec.describe JukeboxesController, type: :controller do
 
       context "when the jukebox song is not found or already playing" do
         it "does not update the currently playing song and the queue" do
-          stub_fetch_playing_song
+          stub_fetch_currently_playing_and_queue
           get :playing_song, params: { jukebox_id: jukebox.id }
           expect(response.body).to eq({ currently_playing_song: nil, queue_update: false }.to_json)
         end

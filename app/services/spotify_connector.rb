@@ -24,7 +24,7 @@ class SpotifyConnector < ApplicationService
 
   def self.fetch_playlists(user)
     response = HTTParty.get(
-      "https://api.spotify.com/v1/users/#{user.uid}/playlists",
+      "https://api.spotify.com/v1/me/playlists&limit=50",
       {
         headers: default_request_header(user.access_token)
       }
@@ -52,31 +52,8 @@ class SpotifyConnector < ApplicationService
     create_songs(parsed_response.flatten, jukebox)
   end
 
-  def self.fetch_playing_song(user)
-    response = HTTParty.get(
-      "https://api.spotify.com/v1/me/player/currently-playing",
-      {
-        headers: default_request_header(user.access_token)
-      }
-    )
-    raise ExpiredAccessToken if response.unauthorized?
-
-    parsed_response = JSON.parse(response.body) rescue nil
-
-    if parsed_response && parsed_response["is_playing"] == true
-      song = parsed_response["item"]
-      { name: song["name"] + " - " + song["artists"][0]["name"], cover_uri: song["album"]["images"][0]["url"],
-        uri: song["uri"] }
-    else
-      { name: "Waiting for first Song", cover_uri: "" }
-    end
-  rescue ExpiredAccessToken
-    user = refresh_token(user)
-    fetch_playing_song(user)
-  end
-
   def self.add_song_to_queue(jukebox, song)
-    query = { uri: song.uri }.to_query
+    query = { uri: song.uri, device_id: jukebox.device.try(:device_uid) }.to_query
 
     response = HTTParty.post(
       "https://api.spotify.com/v1/me/player/queue?#{query}",
@@ -85,9 +62,7 @@ class SpotifyConnector < ApplicationService
       }
     )
     raise ExpiredAccessToken if response.unauthorized?
-    return nil unless response.success?
-
-    QueuedSong.create!(song:, jukebox:, song_uri: song.uri)
+    response.success?
   rescue ExpiredAccessToken
     refresh_token(jukebox.user)
     add_song_to_queue(jukebox, song)
@@ -100,7 +75,84 @@ class SpotifyConnector < ApplicationService
         headers: default_request_header(user.access_token)
       }
     )
-    return nil unless response.success?
+    raise ExpiredAccessToken if response.unauthorized?
+
+    response.success?
+  rescue ExpiredAccessToken
+    refresh_token(jukebox.user)
+    add_song_to_queue(jukebox, song)
+  end
+
+  def self.start_or_stop_playback(user)
+    response = HTTParty.get(
+      "https://api.spotify.com/v1/me/player",
+      {
+        headers: default_request_header(user.access_token)
+      },
+    )
+    raise ExpiredAccessToken if response.unauthorized?
+
+    parsed_response = JSON.parse(response.body) rescue nil
+    if parsed_response && parsed_response["is_playing"]
+      stop_playback(user)
+    else
+      start_playback(user)
+    end
+  rescue ExpiredAccessToken
+    refresh_token(jukebox.user)
+    add_song_to_queue(jukebox, song)
+  end
+
+  def self.stop_playback(user)
+    response = HTTParty.put(
+      "https://api.spotify.com/v1/me/player/pause",
+      {
+        headers: default_request_header(user.access_token)
+      },
+    )
+    response.success?
+  end
+
+  def self.start_playback(user)
+    response = HTTParty.put(
+      "https://api.spotify.com/v1/me/player/play",
+      {
+        headers: default_request_header(user.access_token)
+      },
+    )
+    response.success?
+  end
+
+  def self.fetch_currently_playing_and_queue(user)
+    response = HTTParty.get(
+      "https://api.spotify.com/v1/me/player/queue",
+      {
+        headers: default_request_header(user.access_token)
+      }
+    )
+    raise ExpiredAccessToken if response.unauthorized?
+
+    parsed_response = JSON.parse(response.body) rescue nil
+    currently_playing = build_song_information(parsed_response["currently_playing"])
+    queue = parsed_response["queue"][0..4].map { |song| build_song_information(song) }
+    {
+      currently_playing:,
+      queue:
+    }
+  rescue ExpiredAccessToken
+    refresh_token(user)
+    fetch_currently_playing_and_queue(user)
+  end
+
+  def self.build_song_information(song)
+    name = "#{song["name"]} - #{song["artists"][0]["name"]}" rescue "Waiting for first Song"
+    cover_uri = song["album"]["images"][0]["url"] rescue ""
+    uri = song["uri"] rescue ""
+    {
+      name: name,
+      cover_uri: cover_uri,
+      uri: uri
+    }
   end
 
   def self.refresh_token(user)
@@ -127,8 +179,9 @@ class SpotifyConnector < ApplicationService
   end
 
   def self.song_request(jukebox, playlist_uid, limit, offset)
+    field_filter = "items(track(name,uri,duration_ms,album(images),artists(name)))"
     response = HTTParty.get(
-      "https://api.spotify.com/v1/playlists/#{playlist_uid}/tracks?limit=#{limit}&offset=#{offset}",
+      "https://api.spotify.com/v1/playlists/#{playlist_uid}/tracks?limit=#{limit}&offset=#{offset}&fields=#{field_filter}",
       {
         headers: default_request_header(jukebox.user.access_token)
       }
@@ -145,7 +198,7 @@ class SpotifyConnector < ApplicationService
   def self.create_devices(devices, user)
     devices.each do |device|
       existing_device = Device.where(device_uid: device["id"], user:).last
-      if Device.where(device_uid: device["id"], user:).present?
+      if existing_device.present?
         existing_device.touch
       else
         Device.create(name: device["name"], device_uid: device["id"], user:)
@@ -158,8 +211,13 @@ class SpotifyConnector < ApplicationService
     Playlist.where("playlists.user_id = ?", user).destroy_all
 
     playlists.each do |list|
-      Playlist.create(name: list["name"], playlist_uid: list["id"], uri: list["tracks"]["href"],
-                      track_number: list["tracks"]["total"], user:)
+      Playlist.create(
+        name: list["name"],
+        playlist_uid: list["id"],
+        uri: list["tracks"]["href"],
+        track_number: list["tracks"]["total"],
+        user:
+      )
     end
   end
 
