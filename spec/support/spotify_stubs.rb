@@ -9,7 +9,7 @@ module SpotifyStubs
         ]
       }
     end
-    stub_request(:get, "https://api.spotify.com/v1/me/playlists&limit=50")
+    stub_request(:get, "https://api.spotify.com/v1/me/playlists?limit=50")
       .to_return(
         status: return_status,
         body: body.to_json

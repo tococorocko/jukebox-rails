@@ -24,7 +24,7 @@ class SpotifyConnector < ApplicationService
 
   def self.fetch_playlists(user)
     response = HTTParty.get(
-      "https://api.spotify.com/v1/me/playlists&limit=50",
+      "https://api.spotify.com/v1/me/playlists?limit=50",
       {
         headers: default_request_header(user.access_token)
       }
