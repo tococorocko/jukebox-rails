@@ -58,6 +58,28 @@ or to auto-generate config file:
 
 `rubocop --auto-gen-config`
 
+### Secrets
+
+`EDITOR="code --wait" bin/rails credentials:edit`
+
+#### Example credentials.yml.enc
+
+```yml
+aws:
+  access_key_id: "..."
+  secret_access_key: ""..."
+  region: eu-central-1
+  dev:
+    bucket: "..."
+  prod:
+    bucket: "..."
+spotify:
+  client_id: "..."
+  client_secret: "..."
+# Used as the base secret for all MessageVerifiers in Rails, including the one protecting cookies.
+secret_key_base: "..."
+```
+
 ## Railway.app commands examples
 
     # Connect railway.app (only once)
@@ -76,7 +98,9 @@ or to auto-generate config file:
 
 ## Deployment instructions (Legacy Heroku)
 
+
 Spotify-Jukebox: https://photo-jukebox.herokuapp.com/
+
 Sidekiq: https://photo-jukebox.herokuapp.com/sidekiq-dashboard
 
 ```
