@@ -1,12 +1,16 @@
-let userInput = {char:"", num:""};
+let userInput = { char: "", num: "" };
 
-document.addEventListener('keydown',(e) => {
+document.addEventListener("keydown", (e) => {
   removeSelection();
-  catchInput(e);
+  if (e.keyCode != 27) {
+    // escape
+    catchInput(e);
+  }
 });
 
 const catchInput = (e) => {
   e.preventDefault();
+  console.log(e);
   switch (e.keyCode) {
     case 40: //down
       pageDown();
@@ -33,7 +37,10 @@ const catchInput = (e) => {
       playOrPauseSong();
       break;
     default:
-      songSelection(e);
+      const char = String.fromCharCode(e.keyCode);
+      if (/[a-zA-Z0-9]/i.test(char)) {
+        songSelection(e);
+      }
       break;
   }
 };
