@@ -1,12 +1,15 @@
+
+![RSpec and Rubocop](https://github.com/tococorocko/jukebox-rails/actions/workflows/rubyonrails.yml/badge.svg)
+
 # README
 
 Spotify-Jukebox: https://spotify-jukebox.up.railway.app/
 
 Sidekiq: https://spotify-jukebox.up.railway.app/sidekiq-dashboard
 
-Ruby version: ruby '3.1'
+Ruby version: ruby "3.1"
 
-Rails version: rails '~> 7.0.0'
+Rails version: rails "~> 7.0.0"
 
 ## Configuration
 
@@ -47,6 +50,39 @@ bundle exec rails db:seed
 
 `redis-server`
 
+
+### Rspec:
+`bundle exec rspec`
+
+### Rubocop:
+`bundle exec rubocop`
+
+or to auto-generate config file:
+
+`rubocop --auto-gen-config`
+
+### Secrets
+
+`EDITOR="code --wait" bin/rails credentials:edit`
+
+#### Example credentials.yml.enc
+
+```yml
+aws:
+  access_key_id: "..."
+  secret_access_key: ""..."
+  region: eu-central-1
+  dev:
+    bucket: "..."
+  prod:
+    bucket: "..."
+spotify:
+  client_id: "..."
+  client_secret: "..."
+# Used as the base secret for all MessageVerifiers in Rails, including the one protecting cookies.
+secret_key_base: "..."
+```
+
 ## Railway.app commands examples
 
     # Connect railway.app (only once)
@@ -65,7 +101,9 @@ bundle exec rails db:seed
 
 ## Deployment instructions (Legacy Heroku)
 
+
 Spotify-Jukebox: https://photo-jukebox.herokuapp.com/
+
 Sidekiq: https://photo-jukebox.herokuapp.com/sidekiq-dashboard
 
 ```

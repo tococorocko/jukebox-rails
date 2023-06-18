@@ -1,7 +1,6 @@
 require 'aws-sdk-s3'
 
 class AwsBucket
-
   def initialize
     env = Rails.env.production? ? :prod : :dev
     Aws.config.update({

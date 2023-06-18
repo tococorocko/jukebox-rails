@@ -27,19 +27,17 @@ class GenerateZipJob < ApplicationJob
   end
 
   def generate_zip(temp_images)
-    begin
-      logger.info "3. Create Temporary Zip File with #{@file_path} and i.e. #{temp_images.first}."
-      FileUtils.rm(@file_path) if File.exist?(@file_path)
-      Zip::File.open(@file_path, Zip::File::CREATE) do |zipfile|
-        temp_images.each do |filepath|
-          filename = File.basename(filepath)
-          zipfile.add(filename, filepath)
-        end
+    logger.info "3. Create Temporary Zip File with #{@file_path} and i.e. #{temp_images.first}."
+    FileUtils.rm(@file_path) if File.exist?(@file_path)
+    Zip::File.open(@file_path, Zip::File::CREATE) do |zipfile|
+      temp_images.each do |filepath|
+        filename = File.basename(filepath)
+        zipfile.add(filename, filepath)
       end
-      logger.info "4. Done! file_path #{@file_path} exists? #{File.exist?(@file_path)}}"
-    ensure
-      temp_images.each { |filepath| FileUtils.rm(filepath) }
-      FileUtils.rm_rf("#{User::ZIP_DIRECTORY}/#{@file_name}") if Dir.exist?("#{User::ZIP_DIRECTORY}/#{@file_name}")
     end
+    logger.info "4. Done! file_path #{@file_path} exists? #{File.exist?(@file_path)}}"
+  ensure
+    temp_images.each { |filepath| FileUtils.rm(filepath) }
+    FileUtils.rm_rf("#{User::ZIP_DIRECTORY}/#{@file_name}") if Dir.exist?("#{User::ZIP_DIRECTORY}/#{@file_name}")
   end
 end

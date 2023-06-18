@@ -1,5 +1,4 @@
 class JukeboxesController < ApplicationController
-
   def new
     fetch_active_devices(current_user)
     fetch_playlists(current_user)
@@ -12,47 +11,41 @@ class JukeboxesController < ApplicationController
 
   def create
     @jukebox = Jukebox.new(jukebox_params)
-
-    if @jukebox.save
+    if @jukebox.valid? && @jukebox.save
       redirect_to @jukebox
     else
-      render :new
+      flash[:notice] = "Jukebox konnte nicht erstellt werden. Bitte probieren Sie es erneut. Fehler: " + @jukebox.errors.full_messages.join(", ")
+      redirect_to action: :new
     end
   end
 
   def show
     @jukebox = Jukebox.where(id: params[:id], user: current_user).first
     if @jukebox.blank?
-      flash[:notice] = 'Jukebox nicht gefunden. Bitte probieren Sie es erneut.'
+      flash[:notice] = "Jukebox nicht gefunden. Bitte probieren Sie es erneut."
       redirect_to action: :new
     else
       @jukebox_title = @jukebox.name.presence || "Music"
       fetch_songs(@jukebox)
-      @currently_playing_song = fetch_playing_song(@jukebox.user)
+      currently_playing_and_queue = fetch_currently_playing_and_queue(@jukebox.user)
+      @currently_playing_song = currently_playing_and_queue[:currently_playing]
+      @queue = currently_playing_and_queue[:queue]
       @songs = @jukebox.songs.limit(240).order(:artist, :name)
       numbered_songs = LetterNumberCodes.add_number_and_letter_codes(@songs.pluck(:name, :artist, :id))
       @songs_per_page = numbered_songs.each_slice(60).to_a
       @num_of_pages = "page_#{(numbered_songs.length - 1) / 60 + 1}"
-
-      queue = []
-      @jukebox.queued_songs.limit(5).each do |queued_song|
-        jukebox_song = Song.find_by_uri(queued_song.song_uri)
-        queue.push([jukebox_song.name, jukebox_song.artist])
-      end
-      @queued_songs = queue
-
-      render :layout => "application-jukebox"
+      render layout: "application-jukebox"
     end
   end
 
   def destroy
     jukebox = Jukebox.where(id: params[:id], user: current_user).first
     if jukebox.blank?
-      flash[:notice] = 'Jukebox nicht gefunden. Bitte probieren Sie es erneut.'
+      flash[:notice] = "Jukebox nicht gefunden. Bitte probieren Sie es erneut."
     else
       jukebox = Jukebox.find(params[:id])
       jukebox.destroy
-      flash[:notice] = 'Jukebox gelöscht.'
+      flash[:notice] = "Jukebox gelöscht."
     end
     redirect_to root_path
   end
@@ -65,48 +58,38 @@ class JukeboxesController < ApplicationController
     elsif operation == "remove"
       new_credit = jukebox.credit - 1
     end
-     jukebox.update_attribute(:credit, new_credit)
-     data = { new_credit: new_credit }
+    jukebox.update_attribute(:credit, new_credit)
+    data = { new_credit: }
 
-    render :json => data
-  end
-
-  def queue
-    jukebox = Jukebox.find(params[:jukebox_id])
-
-    render :json => jukebox.queued_songs.to_json(include: (:song))
+    render json: data
   end
 
   def add_song
     jukebox = Jukebox.find(params[:jukebox_id])
     song = Song.find(params[:song_id])
 
-    if song.playing || jukebox.queued_songs.last.try(&:song_uri) == song.uri
-      head :forbidden
-    else
-      SpotifyConnector.add_song_to_queue(jukebox, song)
-      queued_songs = [songs: JSON::parse(jukebox.queued_songs.to_json(include: [:song]))]
-      credits = [credits: {amount: jukebox.credit}]
-      render :json => (queued_songs + credits).to_json
-    end
+    SpotifyConnector.add_song_to_queue(jukebox, song)
+    render json: ([credits: { amount: jukebox.credit }]).to_json
   end
 
   def playing_song
     jukebox = Jukebox.find(params[:jukebox_id])
-    currently_playing_song = fetch_playing_song(jukebox.user)
-    jukebox_song = Song.find_by_uri(currently_playing_song[:uri])
-    updated = false
-    if jukebox_song && jukebox_song.playing != true
-      jukebox.songs.where(playing: true).each { |song| song.update_attribute(:playing, false) }
-      jukebox_song.update_attribute(:playing, true)
-      updated = updated_queue(jukebox, jukebox_song)
-    end
-    render :json => { currently_playing_song: currently_playing_song, queue_update: updated }
+    currently_playing_and_queue = fetch_currently_playing_and_queue(jukebox.user)
+    currently_playing = currently_playing_and_queue[:currently_playing]
+    queue = currently_playing_and_queue[:queue]
+    render json: { currently_playing:, queue: }
   end
 
   def next_song
     jukebox = Jukebox.find(params[:jukebox_id])
     play_next_song(jukebox.user)
+
+    head :ok
+  end
+
+  def control_playback
+    jukebox = Jukebox.find(params[:jukebox_id])
+    control_spotify_playback(jukebox.user)
 
     head :ok
   end
@@ -124,19 +107,7 @@ class JukeboxesController < ApplicationController
     head :ok
   end
 
-
   private
-
-  def updated_queue(jukebox, jukebox_song)
-    return false unless jukebox.queued_songs.first.present?
-
-    if jukebox.queued_songs.first.song.uri == jukebox_song.uri
-      jukebox.queued_songs.first.destroy
-      return true
-    else
-      return false
-    end
-  end
 
   def jukebox_params
     params.require(:jukebox).permit(:name, :user_id, :device_id, :playlist_id, :camera_id, images: [])
@@ -150,8 +121,8 @@ class JukeboxesController < ApplicationController
     SpotifyConnector.fetch_playlists(user)
   end
 
-  def fetch_playing_song(user)
-    SpotifyConnector.fetch_playing_song(user)
+  def fetch_currently_playing_and_queue(user)
+    SpotifyConnector.fetch_currently_playing_and_queue(user)
   end
 
   def fetch_songs(jukebox)
@@ -160,5 +131,9 @@ class JukeboxesController < ApplicationController
 
   def play_next_song(user)
     SpotifyConnector.play_next_song(user)
+  end
+
+  def control_spotify_playback(user)
+    SpotifyConnector.start_or_stop_playback(user)
   end
 end
