@@ -398,6 +398,7 @@ ul li {
 #photo-overlay {
   #photo-player {
    z-index: 29;
+   transform: scaleX(-1); // flip horizontally
  }
   #photo-overlay #photo {
    z-index: 30;
