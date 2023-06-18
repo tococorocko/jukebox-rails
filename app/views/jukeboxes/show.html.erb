@@ -114,8 +114,8 @@
           <p id="current-song"><%= @currently_playing_song[:name] %></p>
       </div>
       <div id="song-queue">
-        <% @queued_songs.each do |song| %>
-          <p><%= song[0] %> - <%= song[1] %></p>
+        <% @queue.each do |song| %>
+          <p><%= song[:name] %></p>
         <% end %>
       </div>
       <p id="song-queue-more"></p>
@@ -140,7 +140,7 @@
         <ul class='jukebox-col'>
           <% song_page_group[0..9].each do |song| %>
             <li class="jukebox-entry">
-              <div class="song-label keyboard-input" data-key=<%= song[6] %> data-num=<%= song[4] %> song-id=<%= song[2] %>>
+              <div class="song-label keyboard-input" data-key=<%= song[6] %> data-num=<%= song[4] %> data-song-id=<%= song[2] %> >
                 <kbd><%= song[5] %></kbd>
                 <kbd><%= song[3] %></kbd>
               </div>
@@ -158,7 +158,7 @@
         <ul class='jukebox-col'>
           <% song_page_group[10..19].each do |song| %>
             <li class="jukebox-entry">
-              <div class="song-label keyboard-input" data-key=<%= song[6] %> data-num=<%= song[4] %> song-id=<%= song[2] %>>
+              <div class="song-label keyboard-input" data-key=<%= song[6] %> data-num=<%= song[4] %> data-song-id=<%= song[2] %> >
                 <kbd><%= song[5] %></kbd>
                 <kbd><%= song[3] %></kbd>
               </div>
@@ -176,7 +176,7 @@
           <ul class='jukebox-col'>
             <% bottom_songs.each do |song| %>
               <li class="jukebox-entry">
-                <div class="song-label keyboard-input" data-key=<%= song[6] %> data-num=<%= song[4] %> song-id=<%= song[2] %>>
+                <div class="song-label keyboard-input" data-key=<%= song[6] %> data-num=<%= song[4] %> data-song-id=<%= song[2] %> >
                   <kbd><%= song[5] %></kbd>
                   <kbd><%= song[3] %></kbd>
                 </div>

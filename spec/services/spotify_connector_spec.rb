@@ -25,14 +25,14 @@ RSpec.describe SpotifyConnector, type: :service do
     let(:user) { create(:user) }
 
     it "fetches and creates playlists for the user" do
-      stub_playlist_request(user:)
+      stub_playlist_request
 
       expect { SpotifyConnector.fetch_playlists(user)}.to change(Playlist, :count).by(2)
       expect(user.playlists.pluck(:playlist_uid)).to match_array(%w[playlist1 playlist2])
     end
 
     it "returns nil if the API request is not successful" do
-      stub_playlist_request(user:, return_status: 500, with_body: false)
+      stub_playlist_request(return_status: 500, with_body: false)
       expect(SpotifyConnector.fetch_playlists(user)).to be_nil
     end
   end
@@ -58,19 +58,27 @@ RSpec.describe SpotifyConnector, type: :service do
     end
   end
 
-  describe ".fetch_playing_song" do
+  describe ".fetch_currently_playing_and_queue" do
     let(:user) { create(:user) }
 
     context "when the response is successful and a song is playing" do
       it "returns the playing song information" do
-        stub_fetch_playing_song()
-        song_info = SpotifyConnector.fetch_playing_song(user)
-
-        expect(song_info).to eq(
+        stub_fetch_currently_playing_and_queue()
+        song_info = SpotifyConnector.fetch_currently_playing_and_queue(user)
+         expect(song_info).to eq(
           {
-            name: "Song Name - Artist Name",
-            cover_uri: "https://example.com/cover.jpg",
-            uri: "spotify:track:123456"
+            currently_playing: {
+              name: "Song Name - Artist Name",
+              cover_uri: "https://example.com/cover.jpg",
+              uri: "spotify:track:123456"
+            },
+            queue: [
+              { name: "Song 1 - Artist 1", cover_uri: "https://example.com/cover1.jpg", uri: "spotify:track:123456" },
+              { name: "Song 2 - Artist 2", cover_uri: "https://example.com/cover2.jpg", uri: "spotify:track:123457" },
+              { name: "Song 3 - Artist 3", cover_uri: "https://example.com/cover3.jpg", uri: "spotify:track:123458" },
+              { name: "Song 4 - Artist 4", cover_uri: "https://example.com/cover4.jpg", uri: "spotify:track:123459" },
+              { name: "Song 5 - Artist 5", cover_uri: "https://example.com/cover5.jpg", uri: "spotify:track:123460" },
+            ]
           }
         )
       end
@@ -78,60 +86,41 @@ RSpec.describe SpotifyConnector, type: :service do
 
     context "when the response is successful but no song is playing" do
       it "returns a default waiting message" do
-        stub_fetch_playing_song(is_playing: false)
-        song_info = SpotifyConnector.fetch_playing_song(user)
+        stub_fetch_currently_playing_and_queue(return_status: 404, with_body: false)
+        song_info = SpotifyConnector.fetch_currently_playing_and_queue(user)
 
-        expect(song_info).to eq({ name: "Waiting for first Song", cover_uri: "" })
+        expect(song_info).to eq({ currently_playing: { name: "Waiting for first Song", cover_uri: "", uri: "" }, queue: [] })
       end
     end
 
     context "when the response is not successful and token needs to be refreshed" do
       it "refreshes the token and raises ApiNotAvailable exception (only in specs!)" do
-        stub_fetch_playing_song(return_status: 401)
+        stub_fetch_currently_playing_and_queue(return_status: 401, with_body: false)
         stub_refresh_token(return_status: 401, with_body: false)
-        expect { SpotifyConnector.fetch_playing_song(user) }.to raise_error(SpotifyConnector::ApiNotAvailable)
+        expect { SpotifyConnector.fetch_currently_playing_and_queue(user) }.to raise_error(SpotifyConnector::ApiNotAvailable)
       end
     end
   end
 
   describe ".add_song_to_queue" do
     let(:user) { create(:user) }
-    let(:device) { create(:device, user: user) }
-    let(:jukebox) { create(:jukebox, user: user, device: device) }
-    let(:song) { create(:song, jukebox: jukebox) }
+    let(:device) { create(:device, user:) }
+    let(:jukebox) { create(:jukebox, user:, device:) }
+    let(:song) { create(:song, jukebox:) }
 
-    before do
-      allow(HTTParty).to receive(:post).and_return(double(success?: true, unauthorized?: false))
-      allow(QueuedSong).to receive(:create)
-    end
-
-    it "adds the song to the queue and returns the queued song" do
-      expect(HTTParty).to receive(:post)
-        .with(
-          "https://api.spotify.com/v1/me/player/queue?uri=#{song.uri}",
-          {
-            headers: {
-              "Accept" => "application/json",
-              "Content-Type" => "application/json",
-              "Authorization" => "Bearer #{user.access_token}"
-            }
-          }
-        )
-        .and_return(double(success?: true, unauthorized?: false))
+    it "adds the song to the queue and returns true" do
+      stub_add_song_to_queue(jukebox:, song:)
       queued_song = SpotifyConnector.add_song_to_queue(jukebox, song)
 
-      expect(queued_song).to be_a(QueuedSong)
+      expect(queued_song).to eq true
     end
 
     context "when the API request is not successful" do
-      before do
-        allow(HTTParty).to receive(:post).and_return(double(success?: false, unauthorized?: false))
-      end
-
-      it "returns nil" do
+      it "returns false" do
+        stub_add_song_to_queue(jukebox:, song:, return_status: 403)
         queued_song = SpotifyConnector.add_song_to_queue(jukebox, song)
 
-        expect(queued_song).to be_nil
+        expect(queued_song).to be false
       end
     end
   end
@@ -140,39 +129,18 @@ RSpec.describe SpotifyConnector, type: :service do
     let(:user) { build(:user) }
 
     context "when the request is successful" do
-      before do
-        allow(HTTParty).to receive(:post).and_return(double(success?: true, unauthorized?: false))
-      end
-
-      it "returns nil" do
+      it "returns true" do
+        stub_play_next_song
         response = SpotifyConnector.play_next_song(user)
-        expect(response).to be_nil
-      end
-
-      it "sends a request to play the next song" do
-        expect(HTTParty).to receive(:post).with(
-          "https://api.spotify.com/v1/me/player/next",
-          {
-            headers: {
-              "Accept" => "application/json",
-              "Content-Type" => "application/json",
-              "Authorization" => "Bearer #{user.access_token}"
-            }
-          }
-        ).and_return(double(success?: true))
-
-        SpotifyConnector.play_next_song(user)
+        expect(response).to be true
       end
     end
 
     context "when the request is not successful" do
-      before do
-        allow(HTTParty).to receive(:post).and_return(double(success?: false, unauthorized?: false))
-      end
-
-      it "returns nil" do
+      it "returns false" do
+        stub_play_next_song(return_status: 403)
         response = SpotifyConnector.play_next_song(user)
-        expect(response).to be_nil
+        expect(response).to be false
       end
     end
   end
