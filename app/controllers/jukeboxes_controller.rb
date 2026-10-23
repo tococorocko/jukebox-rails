@@ -69,7 +69,7 @@ class JukeboxesController < ApplicationController
     song = Song.find(params[:song_id])
 
     SpotifyConnector.add_song_to_queue(jukebox, song)
-    render json: ([credits: { amount: jukebox.credit }]).to_json
+    render json: ([{ credits: { amount: jukebox.credit } }]).to_json
   end
 
   def playing_song

@@ -1,10 +1,10 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.2"
+ruby "3.4.12"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails"
-gem "rails", "~> 7.0.1"
+gem "rails", "~> 7.2.4"
 # Use postgresql as the database for Active Record
 gem "pg", ">= 0.18", "< 2.0"
 # Use Puma as the app server
@@ -24,6 +24,7 @@ gem "aws-sdk-s3", require: false
 gem "bootsnap", require: false
 gem "devise"
 gem "httparty"
+gem "csv"
 gem "jsbundling-rails"
 gem "omniauth-rails_csrf_protection"
 gem "omniauth-spotify"
@@ -55,6 +56,7 @@ group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem "spring"
   gem "spring-watcher-listen", "~> 2.0.0"
+  gem "mutex_m"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

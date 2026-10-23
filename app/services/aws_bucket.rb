@@ -15,7 +15,7 @@ class AwsBucket
   end
 
   def get(file_name, file_path)
-    return @s3_bucket.object(file_name).get(response_target: file_path) if @s3_bucket.object(file_name).exists?
+    @s3_bucket.object(file_name).get(response_target: file_path) if @s3_bucket.object(file_name).exists?
   end
 
   def upload(file_name, file_path)
